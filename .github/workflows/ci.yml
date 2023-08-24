@@ -1,0 +1,27 @@
+name: CI
+on: #reprezentuje kiedy pipeline będzie wykonywany. 
+  push: #informuje, że ten pipeline ma być wykonany, kiedy wykonamy push na konkretne branche.
+    branches: [ main-pipeline ] #możemy po przecinku lub od myślnika podawać kolejne branche.
+  pull_request: 
+    branches: [ main-pipeline ]
+  workflow_dispatch: #ręczne uruchomienie pipeline.
+
+jobs: #każdy pipeline może zawierać więcej niż jednego job'a, które domyślnie będą wykonywane równolegle.
+#możemy ustawić zależność pomiędzy różnymi jobami.
+  build:
+    runs-on: ubuntu-latest #określenie na jakiej maszynie dana akcja zostanie wykonana.
+    steps: #kroki z jakich składa się konkretny job i które zostaną w jego ramach wykonane.
+    #kroki - konkretne kawałki danego procesu, które jesteśmy w stanie wykonać za pomocą polecenia CLI lub PowerShell'a.
+    #w ramach kroku jesteśmy również w stanie skorzystać z predefiniowanych template'ów, które zawierają w sobie jakąś konkretną logikę.
+      - uses: actions/checkout@v2 #określnie jaki konkretnie template chcemy wykorzystać. W tym przypadku jest to określenie że na maszynie, 
+      #która będzie wykonywać ten konkretny job, pobierzemy kod i chekoutujemy się na tego brancha.
+      - name: Setup .NET Core SDK #pobranie .NET Core SKD.
+        uses: actions/setup-dotnet@v3.0.3
+        with:
+          dotnet-version: 7.0.x
+      - name: Restore dependencies #pobranie potrzebnych paczek nuget.
+        run: dotnet restore
+      - name: Build #budowa projektu.
+        run: dotnet build --no-restore
+      - name: Test # uruchomienie testów.
+        run: dotnet test
