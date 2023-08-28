@@ -13,6 +13,11 @@ public class QuestionEntity
     public int Id { get; set; }
 
     /// <summary>
+    /// Category Id.
+    /// </summary>
+    public int CategoryId { get; set; }
+
+    /// <summary>
     /// Category.
     /// </summary>
     public CategoryEntity Category { get; set; }
