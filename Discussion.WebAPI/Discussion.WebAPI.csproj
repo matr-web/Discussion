@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Discussion.DAL\Discussion.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\Interfaces\" />
+  </ItemGroup>
+
 </Project>
