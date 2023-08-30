@@ -1,7 +1,7 @@
 ﻿using Discussion.Entities;
 using Discussion.Models.DTO_s.QuestionDTO_s;
 
-namespace Discussion.Models.DTO_s.CategoryDTO;
+namespace Discussion.Models.DTO_s.CategoryDTO_s;
 
 /// <summary>
 /// A Data Transfer Object for Category type.

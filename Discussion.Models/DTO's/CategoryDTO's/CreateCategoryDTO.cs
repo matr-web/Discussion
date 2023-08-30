@@ -1,4 +1,4 @@
-﻿namespace Discussion.Models.DTO_s.CategoryDTO;
+﻿namespace Discussion.Models.DTO_s.CategoryDTO_s;
 
 /// <summary>
 /// A Data Transfer Object for creation of Category type.

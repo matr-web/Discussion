@@ -1,5 +1,5 @@
 ﻿using Discussion.Entities;
-using Discussion.Models.DTO_s.CategoryDTO;
+using Discussion.Models.DTO_s.CategoryDTO_s;
 using System.Linq.Expressions;
 
 namespace Discussion.BLL.Services.Interfaces;

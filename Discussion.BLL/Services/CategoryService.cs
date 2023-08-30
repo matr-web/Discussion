@@ -1,13 +1,13 @@
 ﻿using Discussion.BLL.Services.Interfaces;
 using Discussion.DAL.Repository.UnitOfWork;
 using Discussion.Entities;
-using Discussion.Models.DTO_s.CategoryDTO;
+using Discussion.Models.DTO_s.CategoryDTO_s;
 using Discussion.Models.DTO_s.QuestionDTO_s;
 using System.Linq.Expressions;
 
 namespace Discussion.BLL.Services;
 
-public class CategoryService : ICategoryService
+internal class CategoryService : ICategoryService
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -107,7 +107,7 @@ public class CategoryService : ICategoryService
         var categoryDTO = CategoryDTO.ToCategoryDTO(categoryEntity);
 
         // Check if loaded Category Entity has related data - Collection of Question type.
-        if (categoryEntity.Questions != null)
+        if (categoryEntity.Questions != null && categoryEntity.Questions.Count() != 0)
         {
             // If yes - map each to DTO and add to the QuestionDTO collection located in CategoryDTO.
             foreach (var questionEntity in categoryEntity.Questions)
