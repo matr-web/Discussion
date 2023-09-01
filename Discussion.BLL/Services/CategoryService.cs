@@ -98,7 +98,7 @@ internal class CategoryService : ICategoryService
     /// <summary>
     /// Helper responsible for the correct course of mapping process between CategoryEntity and CategoryDTO.
     /// Checks if entities have some related data. If yes - map them too.
-    /// Saves code because You don't have to do all the work manually every time You want to map Entity to DTO.
+    /// Saves time because You don't have to do all the work manually every time You want to map Entity to DTO.
     /// </summary>
     /// <param name="categoryEntity">CategoryEntity element that will be mapped to DTO.</param>
     /// <returns>CategoryDTO element with data from given CategoryEntity as parameter.</returns>

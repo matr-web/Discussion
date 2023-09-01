@@ -35,7 +35,6 @@ internal class AnswerService : IAnswerService
 
         // Return Collection of answerDTO type.
         return answerDTOList;
-
     }
 
     public async Task<AnswerDTO> GetAnswerByAsync(Expression<Func<AnswerEntity, bool>> filterExpression, string includeProperties = null)
@@ -103,7 +102,7 @@ internal class AnswerService : IAnswerService
     /// <summary>
     /// Helper responsible for the correct course of mapping process between AnswerEntity and AnswerDTO.
     /// Checks if entities have some related data. If yes - map them too.
-    /// Saves code because You don't have to do all the work manually every time You want to map Entity to DTO.
+    /// Saves time because You don't have to do all the work manually every time You want to map Entity to DTO.
     /// </summary>
     /// <param name="answerEntity">AnswerEntity element that will be mapped to DTO.</param>
     /// <returns>AnswerDTO element with data from given AnswerEntity as parameter.</returns>
@@ -137,5 +136,4 @@ internal class AnswerService : IAnswerService
 
         return answerDTO;
     }
-
 }

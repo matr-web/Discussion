@@ -25,9 +25,9 @@ public interface IQuestionService
     /// <summary>
     /// Insert new Question type to the DB.
     /// </summary>
-    /// <param name="createQuestionDTODTO">DTO that contains data for a Question that should be added to the DB.</param>
+    /// <param name="createQuestionDTO">DTO that contains data for a Question that should be added to the DB.</param>
     /// <returns>QuestionDTO type with the just created Question data.</returns>
-    Task<QuestionDTO> InsertQuestionAsync(CreateQuestionDTO createQuestionDTODTO);
+    Task<QuestionDTO> InsertQuestionAsync(CreateQuestionDTO createQuestionDTO);
 
     /// <summary>
     /// Update given Question in the DB.
