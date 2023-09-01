@@ -134,7 +134,7 @@ internal class QuestionService : IQuestionService
             // If yes - map each to DTO and add to the AnswerDTO collection located in QuestionDTO.
             foreach (var answerEntity in questionEntity.Answers)
             {
-                questionDTO.Answers.Add(AnswerDTO.ToAnswerDTO(questionEntity.Answers));
+                questionDTO.Answers.Add(AnswerDTO.ToAnswerDTO(answerEntity));
             }
         }
 
@@ -145,7 +145,7 @@ internal class QuestionService : IQuestionService
             foreach (var ratingEntity in questionEntity.Ratings)
             {
                 
-                questionDTO.Ratings.Add(RatingDTO.ToRatingDTO(questionEntity.Ratings));
+                questionDTO.Ratings.Add(RatingDTO.ToRatingDTO(ratingEntity));
             }
         }
 
