@@ -2,6 +2,7 @@
 using Discussion.DAL.Repository.UnitOfWork;
 using Discussion.Entities;
 using Discussion.Models.DTO_s.AnswerDTO_s;
+using Discussion.Models.DTO_s.CategoryDTO_s;
 using Discussion.Models.DTO_s.QuestionDTO_s;
 using Discussion.Models.DTO_s.RatingDTO_s;
 using Discussion.Models.DTO_s.UserDTO_s;
@@ -33,7 +34,7 @@ internal class QuestionService : IQuestionService
             questionDTOList.Add(questionDTO);
         }
 
-        // Return Collection of QuestionDTO.
+        // Return Collection of QuestionDTO type.
         return questionDTOList;
     }
 
@@ -71,7 +72,7 @@ internal class QuestionService : IQuestionService
         return questionDTO;
     }
 
-    public async Task<QuestionDTO> UpdateQuestionAsync(QuestionDTO updateQuestionDTO)
+    public async Task<QuestionDTO> UpdateQuestionAsync(UpdateQuestionDTO updateQuestionDTO)
     {
         // Get QuestionEntity that will be updated.
         var questionEntity = await _unitOfWork.QuestionRepository.GetAsync(c => c.Id == updateQuestionDTO.Id, "Category,User,Answers,Ratings");
@@ -88,13 +89,13 @@ internal class QuestionService : IQuestionService
         // Map it to DTO.
         var questionDTO = MapToQuestionDTO(questionEntity);
 
-        // Return current mapped DTO.
+        // Return current inserted Entity mapped to DTO.
         return questionDTO;
     }
 
     public async Task DeleteQuestionAsync(int questionId)
     {
-        // Get questionEntity that should be deleted.
+        // Get QuestionEntity that should be deleted.
         var questionEntity = await _unitOfWork.QuestionRepository.GetAsync(c => c.Id == questionId);
 
         // Delete it...
@@ -112,6 +113,13 @@ internal class QuestionService : IQuestionService
     private QuestionDTO MapToQuestionDTO(QuestionEntity questionEntity)
     {
         var questionDTO = QuestionDTO.ToQuestionDTO(questionEntity);
+
+        // Check if loaded Question Entity has related data - Category.
+        if (questionEntity.Category != null)
+        {
+            // If yes - map the CategoryEntity to DTO and add to the CategoryDTO property located in QuestionDTO.
+            questionDTO.Category = CategoryDTO.ToCategoryDTO(questionEntity.Category);
+        }
 
         // Check if loaded Question Entity has related data - Author.
         if (questionEntity.User != null)
@@ -136,6 +144,7 @@ internal class QuestionService : IQuestionService
             // If yes - map each to DTO and add to the RatingDTO collection located in QuestionDTO.
             foreach (var ratingEntity in questionEntity.Ratings)
             {
+                
                 questionDTO.Ratings.Add(RatingDTO.ToRatingDTO(questionEntity.Ratings));
             }
         }

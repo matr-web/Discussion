@@ -31,7 +31,7 @@ internal class CategoryService : ICategoryService
             categoryDTOList.Add(categoryDTO);
         }
 
-        // Return Collection of CategoryDTO.
+        // Return Collection of CategoryDTO type.
         return categoryDTOList; 
     }
 
@@ -62,7 +62,7 @@ internal class CategoryService : ICategoryService
         // Map it to DTO.
         var categoryDTO = MapToCategoryDTO(categoryEntity);
 
-        // Return current mapped DTO.
+        // Return current inserted Entity mapped to DTO.
         return categoryDTO;
     }
 
@@ -81,13 +81,13 @@ internal class CategoryService : ICategoryService
         // Map it to DTO.
         var categoryDTO = MapToCategoryDTO(categoryEntity);
 
-        // Return current mapped DTO.
+        // Return current mapped Entity as DTO.
         return categoryDTO;
     }
 
     public async Task DeleteCategoryAsync(int categoryId)
     {
-        // Get categoryEntity that should be deleted.
+        // Get CategoryEntity that should be deleted.
         var categoryEntity = await _unitOfWork.CategoryRepository.GetAsync(c => c.Id == categoryId);
 
         // Delete it...

@@ -5,6 +5,9 @@ using Discussion.Models.DTO_s.UserDTO_s;
 
 namespace Discussion.Models.DTO_s.QuestionDTO_s;
 
+/// <summary>
+/// A Data Transfer Object for Question type.
+/// </summary>
 public class QuestionDTO
 {
     /// <summary>
@@ -77,17 +80,16 @@ public class QuestionDTO
         Type type = obj.GetType();
         var properties = type.GetProperties();
 
-        var qestionDTO = new QuestionDTO
+        var questionDTO = new QuestionDTO
         {
             Id = (int)properties.FirstOrDefault(p => p.Name == "Id").GetValue(obj),
             CategoryId = (int)properties.FirstOrDefault(p => p.Name == "CategoryId").GetValue(obj),
             Topic = properties.FirstOrDefault(p => p.Name == "Topic").GetValue(obj).ToString(),
             Content = properties.FirstOrDefault(p => p.Name == "Content").GetValue(obj).ToString(),
-            UserId = (int)properties.FirstOrDefault(p => p.Name == "UserId").GetValue(obj),
+            UserId = properties.FirstOrDefault(p => p.Name == "UserId").GetValue(obj) != null ?
+            (int)properties.FirstOrDefault(p => p.Name == "UserId").GetValue(obj) : 0
         };
 
-        qestionDTO.Category = CategoryDTO.ToCategoryDTO(properties.FirstOrDefault(p => p.Name == "Category").GetValue(obj));
-
-        return qestionDTO;
+        return questionDTO;
     }
 }

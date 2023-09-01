@@ -1,10 +1,16 @@
-﻿namespace Discussion.Models.DTO_s.QuestionDTO_s;
+﻿using Discussion.Models.DTO_s.CategoryDTO_s;
+namespace Discussion.Models.DTO_s.QuestionDTO_s;
 
 /// <summary>
-/// A Data Transfer Object for Create operation of Question type.
+/// A Data Transfer Object for Update operation of Question type.
 /// </summary>
-public class CreateQuestionDTO
+public class UpdateQuestionDTO
 {
+    /// <summary>
+    /// Id.
+    /// </summary>
+    public int Id { get; set; }
+
     /// <summary>
     /// Category Id.
     /// </summary>
@@ -19,9 +25,4 @@ public class CreateQuestionDTO
     /// Content.
     /// </summary>
     public string Content { get; set; }
-
-    /// <summary>
-    /// Author Id.
-    /// </summary>
-    public int UserId { get; set; }
 }

@@ -34,7 +34,7 @@ public interface IQuestionService
     /// </summary>
     /// <param name="updateQuestionDTO">DTO that contains data for a Question that should be updated in the DB.</param>
     /// <returns>QuestionDTO type with the just updated Question data.</returns>
-    Task<QuestionDTO> UpdateQuestionAsync(QuestionDTO updateQuestionDTO);
+    Task<QuestionDTO> UpdateQuestionAsync(UpdateQuestionDTO updateQuestionDTO);
 
     /// <summary>
     /// Delete given Question from the DB.
