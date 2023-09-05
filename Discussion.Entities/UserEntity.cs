@@ -31,12 +31,7 @@ public class UserEntity
     /// <summary>
     /// PasswordHash.
     /// </summary>
-    public byte[] PasswordHash { get; set; }
-
-    /// <summary>
-    /// PasswordSalt.
-    /// </summary>
-    public byte[] PasswordSalt { get; set; }
+    public string PasswordHash { get; set; }
 
     /// <summary>
     /// Collection of User's Question's.

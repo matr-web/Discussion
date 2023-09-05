@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace Discussion.BLL.Services;
 
-internal class AnswerService : IAnswerService
+public class AnswerService : IAnswerService
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -22,6 +22,12 @@ internal class AnswerService : IAnswerService
     {
         // Get all needed Answer Entities with fulfill given requirements.
         var answerEntityCollection = await _unitOfWork.AnswerRepository.GetAllAsync(filterExpression, includeProperties);
+
+        // If there are no Answer's, return null.
+        if (answerEntityCollection.Count() == 0)
+        {
+            return null;
+        }
 
         // Map from AnswerEntity to AnswerDTO collection.
         var answerDTOList = new List<AnswerDTO>();
@@ -41,6 +47,12 @@ internal class AnswerService : IAnswerService
     {
         // Get AnswerEntity with fulfill given requirements.
         var answerEntity = await _unitOfWork.AnswerRepository.GetAsync(filterExpression, includeProperties);
+
+        // If no such Answer exists, return null.
+        if (answerEntity == null)
+        {
+            return null;
+        }
 
         // Map it to DTO.
         var answerDTO = MapToAnswerDTO(answerEntity);
