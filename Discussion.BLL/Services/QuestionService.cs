@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 
 namespace Discussion.BLL.Services;
 
-internal class QuestionService : IQuestionService
+public class QuestionService : IQuestionService
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -23,6 +23,12 @@ internal class QuestionService : IQuestionService
     {
         // Get all needed Question Entities with fulfill given requirements.
         var questionEntityCollection = await _unitOfWork.QuestionRepository.GetAllAsync(filterExpression, includeProperties);
+
+        // If there are no Question's, return null.
+        if (questionEntityCollection.Count() == 0)
+        {
+            return null;
+        }
 
         // Map from QuestionEntity to QuestionDTO collection.
         var questionDTOList = new List<QuestionDTO>();
@@ -42,6 +48,12 @@ internal class QuestionService : IQuestionService
     {
         // Get QuestionEntity with fulfill given requirements.
         var questionEntity = await _unitOfWork.QuestionRepository.GetAsync(filterExpression, includeProperties);
+
+        // If no such Question exists, return null.
+        if (questionEntity == null)
+        {
+            return null;
+        }
 
         // Map it to DTO.
         var questionDTO = MapToQuestionDTO(questionEntity);

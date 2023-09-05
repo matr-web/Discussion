@@ -17,5 +17,10 @@ public interface IUnitOfWork
 
 
     // Global Method's.
-    Task SaveAsync();
+    /// <summary>
+    /// Saves all changes made in this context to the database.
+    /// </summary>
+    /// <returns> A task that represents the asynchronous save operation. 
+    /// The task result contains the number of state entries written to the database.</returns>
+    Task<int> SaveAsync();
 }

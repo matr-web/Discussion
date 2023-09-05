@@ -24,8 +24,8 @@ public class UnitOfWork : IUnitOfWork
     public IUserRepository UserRepository { get; private set; }
 
     // Implementation of Global Method's for all repositories.
-    public async Task SaveAsync()
+    public async Task<int> SaveAsync()
     {
-        await _db.SaveChangesAsync();
+       return await _db.SaveChangesAsync();
     }
 }

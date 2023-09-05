@@ -23,6 +23,12 @@ public class RatingService : IRatingService
         // Get all needed Rating Entities with fulfill given requirements.
         var ratingEntityCollection = await _unitOfWork.RatingRepository.GetAllAsync(filterExpression, includeProperties);
 
+        // If there are no Rating's, return null.
+        if(ratingEntityCollection.Count() == 0)
+        {
+            return null;
+        }
+
         // Map from RatingEntity to RatingDTO collection.
         var ratingDTOList = new List<RatingDTO>();
 
