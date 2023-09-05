@@ -15,14 +15,14 @@ internal class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.HasKey(u => u.Id);
 
         builder.Property(u => u.Username).IsRequired();
+        builder.HasIndex(u => u.Username).IsUnique();
 
         builder.Property(u => u.Email).IsRequired();
+        builder.HasIndex(u => u.Email).IsUnique();
 
         builder.Property(u => u.Role).IsRequired();
 
         builder.Property(u => u.PasswordHash).IsRequired();
-
-        builder.Property(u => u.PasswordSalt).IsRequired();
 
         // One to Many configuration for User/Questions.
         builder.HasMany(u => u.Questions)

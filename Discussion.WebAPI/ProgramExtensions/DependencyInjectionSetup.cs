@@ -1,4 +1,6 @@
-﻿using Discussion.DAL.Repository.UnitOfWork;
+﻿using Discussion.BLL.Services;
+using Discussion.BLL.Services.Interfaces;
+using Discussion.DAL.Repository.UnitOfWork;
 
 namespace Discussion.WebAPI.ProgramExtensions;
 
@@ -11,6 +13,13 @@ public static class DependencyInjectionSetup
     {
         // Register UnitOfWork for repositories.
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // Register Services.
+        services.AddScoped<IAnswerService, AnswerService>();
+        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IQuestionService, QuestionService>();
+        services.AddScoped<IRatingService, RatingService>();
+        services.AddScoped<IUserService, UserService>();
 
         return services;
     }

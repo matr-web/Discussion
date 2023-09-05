@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace Discussion.BLL.Services;
 
-internal class CategoryService : ICategoryService
+public class CategoryService : ICategoryService
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -20,6 +20,13 @@ internal class CategoryService : ICategoryService
     {
         // Get all needed Category Entities with fulfill given requirements.
         var categoryEntityCollection = await _unitOfWork.CategoryRepository.GetAllAsync(filterExpression, includeProperties);
+
+        // If there are no Categories, return null.
+        if (categoryEntityCollection.Count() == 0)
+        {
+            return null;
+        }
+
 
         // Map from CategoryEntity to CategoryDTO collection.
         var categoryDTOList = new List<CategoryDTO>();
@@ -39,6 +46,12 @@ internal class CategoryService : ICategoryService
     {
         // Get CategoryEntity with fulfill given requirements.
         var categoryEntity = await _unitOfWork.CategoryRepository.GetAsync(filterExpression, includeProperties);
+
+        // If no such Category exists, return null.
+        if (categoryEntity == null)
+        {
+            return null;
+        }
 
         // Map it to DTO.
         var categoryDTO = MapToCategoryDTO(categoryEntity);
