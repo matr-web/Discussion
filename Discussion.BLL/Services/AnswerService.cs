@@ -61,14 +61,14 @@ public class AnswerService : IAnswerService
         return answerDTO;
     } 
 
-    public async Task<AnswerDTO> InsertAnswerAsync(CreateAnswerDTO createAnswerDTO)
+    public async Task<AnswerDTO> InsertAnswerAsync(CreateAnswerDTO createAnswerDTO, int userId)
     {
         // Create new AnswerEntity with given data.
         var answerEntity = new AnswerEntity
         {
             Content = createAnswerDTO.Content,
             QuestionId = createAnswerDTO.QuestionId,
-            UserId = createAnswerDTO.UserId
+            UserId = userId
         };
 
         // Add it...
@@ -104,7 +104,7 @@ public class AnswerService : IAnswerService
     public async Task DeleteAnswerAsync(int answerId)
     {
         // Get AnswerEntity that should be deleted.
-        var answerEntity = await _unitOfWork.AnswerRepository.GetAsync(c => c.Id == answerId);
+        var answerEntity = await _unitOfWork.AnswerRepository.GetAsync(c => c.Id == answerId, "Ratings");
 
         // Delete it...
         await _unitOfWork.AnswerRepository.Remove(answerEntity);
@@ -139,11 +139,17 @@ public class AnswerService : IAnswerService
         // Check if loaded AnswerEntity has related data - Collection of Rating type.
         if (answerEntity.Ratings != null && answerEntity.Ratings.Count() != 0)
         {
+            // Create blanc RatingDto type list.
+            var ratingsList = new List<RatingDTO>();
+
             // If yes - map each to DTO and add to the RatingDTO collection located in AnswerDTO.
             foreach (var ratingEntity in answerEntity.Ratings)
             {
-                answerDTO.Ratings.Add(RatingDTO.ToRatingDTO(ratingEntity));
+                ratingsList.Add(RatingDTO.ToRatingDTO(ratingEntity));
             }
+
+            // Set Ratings collection...
+            answerDTO.Ratings = ratingsList;
         }
 
         return answerDTO;

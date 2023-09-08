@@ -86,6 +86,7 @@ public class QuestionDTO
             CategoryId = (int)properties.FirstOrDefault(p => p.Name == "CategoryId").GetValue(obj),
             Topic = properties.FirstOrDefault(p => p.Name == "Topic").GetValue(obj).ToString(),
             Content = properties.FirstOrDefault(p => p.Name == "Content").GetValue(obj).ToString(),
+            Date = Convert.ToDateTime(properties.FirstOrDefault(p => p.Name == "Date").GetValue(obj)),
             UserId = properties.FirstOrDefault(p => p.Name == "UserId").GetValue(obj) != null ?
             (int)properties.FirstOrDefault(p => p.Name == "UserId").GetValue(obj) : 0
         };

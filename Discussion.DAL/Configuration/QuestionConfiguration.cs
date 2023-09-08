@@ -26,12 +26,12 @@ internal class QuestionConfiguration : IEntityTypeConfiguration<QuestionEntity>
         builder.HasMany(q => q.Answers)
           .WithOne(a => a.Question)
           .HasForeignKey(a => a.QuestionId)
-          .OnDelete(DeleteBehavior.Cascade); // If you delete Question, Answers for the Question also will be deleted.
+          .OnDelete(DeleteBehavior.ClientCascade); // If you delete Question, Answers for the Question also will be deleted.
 
         // One to many configuration for Question/Ratings.
         builder.HasMany(q => q.Ratings)
            .WithOne(r => r.Question)
            .HasForeignKey(r => r.QuestionId)
-           .OnDelete(DeleteBehavior.Cascade); // If you delete Question, Ratings for the Question also will be deleted.
+           .OnDelete(DeleteBehavior.ClientCascade); // If you delete Question, Ratings for the Question also will be deleted.
     }
 }

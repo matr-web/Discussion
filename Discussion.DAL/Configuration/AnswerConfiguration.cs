@@ -24,6 +24,6 @@ internal class AnswerConfiguration : IEntityTypeConfiguration<AnswerEntity>
         builder.HasMany(a => a.Ratings)
             .WithOne(r => r.Answer)
             .HasForeignKey(r => r.AnswerId)
-            .OnDelete(DeleteBehavior.Cascade); // If you delete Answer, Ratings for the Answer also will be deleted.
+            .OnDelete(DeleteBehavior.ClientCascade); // If you delete Answer, Ratings for the Answer also will be deleted.
     }
 }

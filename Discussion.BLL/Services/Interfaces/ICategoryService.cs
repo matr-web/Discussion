@@ -34,7 +34,7 @@ public interface ICategoryService
     /// </summary>
     /// <param name="updateCategoryDTO">DTO that contains data for a Category that should be updated in the DB.</param>
     /// <returns>CategoryDTO type with the just updated Category data.</returns>
-    Task<CategoryDTO> UpdateCategoryAsync(CategoryDTO updateCategoryDTO);
+    Task<CategoryDTO> UpdateCategoryAsync(UpdateCategoryDTO updateCategoryDTO);
 
     /// <summary>
     /// Delete given Category from the DB.

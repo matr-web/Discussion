@@ -20,6 +20,6 @@ internal class CategoryConfiguration : IEntityTypeConfiguration<CategoryEntity>
         builder.HasMany(c => c.Questions)
           .WithOne(q => q.Category)
           .HasForeignKey(q => q.CategoryId)
-          .OnDelete(DeleteBehavior.Cascade); // If you delete Category, Questions for the Category also will be deleted.
+          .OnDelete(DeleteBehavior.ClientCascade); // If you delete Category, Questions for the Category also will be deleted.
     }
 }
