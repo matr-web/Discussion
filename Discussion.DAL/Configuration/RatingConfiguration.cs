@@ -15,17 +15,5 @@ internal class RatingConfiguration : IEntityTypeConfiguration<RatingEntity>
         builder.HasKey(r => r.Id);
 
         builder.Property(r => r.Value).IsRequired();
-
-        // Many to One configuration for Ratings/Question.
-        builder.HasOne(r => r.Question)
-          .WithMany(q => q.Ratings)
-          .HasForeignKey(r => r.QuestionId)
-          .OnDelete(DeleteBehavior.NoAction); // If you delete Rating, Question will remain.
-
-        // Many to One configuration for Ratings/Answer.
-        builder.HasOne(r => r.Answer)
-          .WithMany(q => q.Ratings)
-          .HasForeignKey(r => r.AnswerId)
-          .OnDelete(DeleteBehavior.NoAction); // If you delete Rating, Answer will remain.
     }
 }

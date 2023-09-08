@@ -3,6 +3,7 @@ using Discussion.DAL.Repository.UnitOfWork;
 using Discussion.Entities;
 using Discussion.Models.DTO_s.CategoryDTO_s;
 using Discussion.Models.DTO_s.QuestionDTO_s;
+using Discussion.Models.DTO_s.UserDTO_s;
 using System.Linq.Expressions;
 
 namespace Discussion.BLL.Services;
@@ -26,7 +27,6 @@ public class CategoryService : ICategoryService
         {
             return null;
         }
-
 
         // Map from CategoryEntity to CategoryDTO collection.
         var categoryDTOList = new List<CategoryDTO>();
@@ -79,7 +79,7 @@ public class CategoryService : ICategoryService
         return categoryDTO;
     }
 
-    public async Task<CategoryDTO> UpdateCategoryAsync(CategoryDTO updateCategoryDTO)
+    public async Task<CategoryDTO> UpdateCategoryAsync(UpdateCategoryDTO updateCategoryDTO)
     {
         // Get CategoryEntity that will be updated.
         var categoryEntity = await _unitOfWork.CategoryRepository.GetAsync(c => c.Id == updateCategoryDTO.Id, "Questions");
@@ -122,11 +122,17 @@ public class CategoryService : ICategoryService
         // Check if loaded Category Entity has related data - Collection of Question type.
         if (categoryEntity.Questions != null && categoryEntity.Questions.Count() != 0)
         {
+            // Create blanc QuestionDto type list.
+            var questionsList = new List<QuestionDTO>();
+
             // If yes - map each to DTO and add to the QuestionDTO collection located in CategoryDTO.
             foreach (var questionEntity in categoryEntity.Questions)
             {
-                categoryDTO.Questions.Add(QuestionDTO.ToQuestionDTO(questionEntity));
+                questionsList.Add(QuestionDTO.ToQuestionDTO(questionEntity));
             }
+
+            // Set Questions collection...
+            categoryDTO.Questions = questionsList;
         }
 
         return categoryDTO;

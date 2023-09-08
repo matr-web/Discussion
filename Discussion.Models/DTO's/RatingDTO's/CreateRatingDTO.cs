@@ -11,11 +11,6 @@ public class CreateRatingDTO
     public int Value { get; set; }
 
     /// s<summary>
-    /// UserId.
-    /// </summary>
-    public int UserId { get; set; }
-
-    /// s<summary>
     /// QuetionId.
     /// </summary>
     public int? QuestionId { get; set; }

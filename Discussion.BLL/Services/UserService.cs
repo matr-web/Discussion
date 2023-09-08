@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Discussion.BLL.Services.Interfaces;
+﻿using Discussion.BLL.Services.Interfaces;
 using Discussion.DAL.Repository.UnitOfWork;
 using Discussion.Entities;
 using Discussion.Models.DTO_s.UserDTO_s;
@@ -12,20 +11,30 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Http;
+using Discussion.Models.Models;
 
 namespace Discussion.BLL.Services;
 
 public class UserService : IUserService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IConfiguration _configuration;
-    //private readonly AuthenticationSettings _authenticationSettings;
+    //private readonly IConfiguration _configuration;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly AuthenticationSettings _authenticationSettings;
 
-    public UserService(IUnitOfWork unitOfWork, IConfiguration configuration)
+    public UserService(IUnitOfWork unitOfWork, IConfiguration configuration, 
+        IHttpContextAccessor httpContextAccessor, AuthenticationSettings authenticationSettings)
     {
         _unitOfWork = unitOfWork; 
-        _configuration = configuration; 
+        //_configuration = configuration;
+        _httpContextAccessor = httpContextAccessor;
+        _authenticationSettings = authenticationSettings;
     }
+
+    public ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
+
+    public int? UserId => User == null ? null : int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
     public async Task<UserDTO> GetUserByAsync(Expression<Func<UserEntity, bool>> filterExpression, string includeProperties = null)
     {
@@ -78,22 +87,24 @@ public class UserService : IUserService
     {
         // List of Claims.
         List<Claim> claims = new List<Claim> {
+                new Claim(ClaimTypes.NameIdentifier, userDTO.Id.ToString()),
                 new Claim(ClaimTypes.Name, userDTO.Username),
                 new Claim(ClaimTypes.Email, userDTO.Email),
                 new Claim(ClaimTypes.Role, userDTO.Role)
             };
 
         // Create Key.
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-            _configuration.GetSection("AppSettings:Token").Value!));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JWTKey));
 
         // Signing Credentials.
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
         // Generate Token.
         var token = new JwtSecurityToken(
+                _authenticationSettings.JWTIssuer,
+                _authenticationSettings.JWTIssuer,
                 claims: claims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.Now.AddDays(_authenticationSettings.JWTExpireDays),
                 signingCredentials: creds
             );
 
@@ -118,31 +129,49 @@ public class UserService : IUserService
         // Check if loaded User Entity has related data - Collection of Answer type.
         if (userEntity.Answers != null && userEntity.Answers.Count() != 0)
         {
+            // Create blanc AnswerDto type list.
+            var answersList = new List<AnswerDTO>();
+
             // If yes - map each to DTO and add to the AnswerDTO collection located in UserDTO.
             foreach (var answerEntity in userEntity.Answers)
             {
-                userDTO.Answers.Add(AnswerDTO.ToAnswerDTO(answerEntity));
+                answersList.Add(AnswerDTO.ToAnswerDTO(answerEntity));
             }
+
+            // Set Answers collection...
+            userDTO.Answers = answersList;
         }
 
         // Check if loaded User Entity has related data - Collection of Rating type.
         if (userEntity.Ratings != null && userEntity.Ratings.Count() != 0)
         {
+            // Create blanc RatingDto type list.
+            var ratingsList = new List<RatingDTO>();
+
             // If yes - map each to DTO and add to the RatingDTO collection located in UserDTO.
             foreach (var ratingEntity in userEntity.Ratings)
             {
-                userDTO.Ratings.Add(RatingDTO.ToRatingDTO(ratingEntity));
+                ratingsList.Add(RatingDTO.ToRatingDTO(ratingEntity));
             }
+
+            // Set Ratings collection...
+            userDTO.Ratings = ratingsList;
         }
 
         // Check if loaded User Entity has related data - Collection of Question type.
         if (userEntity.Questions != null && userEntity.Questions.Count() != 0)
         {
+            // Create blanc QuestionDto type list.
+            var questionsList = new List<QuestionDTO>();
+
             // If yes - map each to DTO and add to the QuestionDTO collection located in UserDTO.
             foreach (var questionEntity in userEntity.Questions)
             {
-                userDTO.Questions.Add(QuestionDTO.ToQuestionDTO(questionEntity));
+                questionsList.Add(QuestionDTO.ToQuestionDTO(questionEntity));
             }
+
+            // Set Questions collection...
+            userDTO.Questions = questionsList;
         }
 
         return userDTO;

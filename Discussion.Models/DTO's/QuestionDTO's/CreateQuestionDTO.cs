@@ -19,9 +19,4 @@ public class CreateQuestionDTO
     /// Content.
     /// </summary>
     public string Content { get; set; }
-
-    /// <summary>
-    /// Author Id.
-    /// </summary>
-    public int UserId { get; set; }
 }

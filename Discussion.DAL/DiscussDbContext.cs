@@ -15,7 +15,7 @@ public class DiscussDbContext : DbContext
 
     public DbSet<AnswerEntity> Answers { get; set; }
 
-    public DbSet<AnswerEntity> Categories { get; set; }
+    public DbSet<CategoryEntity> Categories { get; set; }
 
     public DbSet<QuestionEntity> Questions { get; set; }
 

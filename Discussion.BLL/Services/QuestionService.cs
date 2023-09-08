@@ -62,7 +62,7 @@ public class QuestionService : IQuestionService
         return questionDTO;
     }
 
-    public async Task<QuestionDTO> InsertQuestionAsync(CreateQuestionDTO createQuestionDTODTO)
+    public async Task<QuestionDTO> InsertQuestionAsync(CreateQuestionDTO createQuestionDTODTO, int userId)
     {
         // Create new QuestionEntity with given data.
         var questionEntity = new QuestionEntity
@@ -70,7 +70,7 @@ public class QuestionService : IQuestionService
             CategoryId = createQuestionDTODTO.CategoryId,
             Topic = createQuestionDTODTO.Topic,
             Content = createQuestionDTODTO.Content,
-            UserId = createQuestionDTODTO.UserId
+            UserId = userId
         };
 
         // Add it...
@@ -143,22 +143,34 @@ public class QuestionService : IQuestionService
         // Check if loaded Question Entity has related data - Collection of Answer type.
         if (questionEntity.Answers != null && questionEntity.Answers.Count() != 0)
         {
+            // Create blanc AnswerDto type list.
+            var answersList = new List<AnswerDTO>();
+
             // If yes - map each to DTO and add to the AnswerDTO collection located in QuestionDTO.
             foreach (var answerEntity in questionEntity.Answers)
             {
-                questionDTO.Answers.Add(AnswerDTO.ToAnswerDTO(answerEntity));
+                answersList.Add(AnswerDTO.ToAnswerDTO(answerEntity));
             }
+
+            // Set Answers collection...
+            questionDTO.Answers = answersList;
         }
 
         // Check if loaded Question Entity has related data - Collection of Answer type.
         if (questionEntity.Ratings != null && questionEntity.Ratings.Count() != 0)
         {
+            // Create blanc RatingDto type list.
+            var ratingsList = new List<RatingDTO>();
+
             // If yes - map each to DTO and add to the RatingDTO collection located in QuestionDTO.
             foreach (var ratingEntity in questionEntity.Ratings)
             {
-                
-                questionDTO.Ratings.Add(RatingDTO.ToRatingDTO(ratingEntity));
+
+                ratingsList.Add(RatingDTO.ToRatingDTO(ratingEntity));
             }
+
+            // Set Ratings collection...
+            questionDTO.Ratings = ratingsList;
         }
 
         return questionDTO;

@@ -1,11 +1,22 @@
 ﻿using Discussion.Entities;
 using Discussion.Models.DTO_s.UserDTO_s;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace Discussion.BLL.Services.Interfaces;
 
 public interface IUserService
 {
+    /// <summary>
+    /// Get User from current Context.
+    /// </summary>
+    ClaimsPrincipal? User { get; }
+
+    /// <summary>
+    /// Get User Id from current Context.
+    /// </summary>
+    int? UserId { get; }
+
     /// <summary>
     /// Get a specific User that fulfill given filterExpression.
     /// </summary>

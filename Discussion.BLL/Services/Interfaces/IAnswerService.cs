@@ -26,8 +26,9 @@ public interface IAnswerService
     /// Insert new Answer type to the DB.
     /// </summary>
     /// <param name="createAnswerDTO">DTO that contains data for a Answer that should be added to the DB.</param>
+    /// <param name="userId">User Id that create's given Answer.</param>
     /// <returns>AnswerDTO type with the just created Answer data.</returns>
-    Task<AnswerDTO> InsertAnswerAsync(CreateAnswerDTO createAnswerDTO);
+    Task<AnswerDTO> InsertAnswerAsync(CreateAnswerDTO createAnswerDTO, int userId);
 
     /// <summary>
     /// Update given Answer in the DB.
