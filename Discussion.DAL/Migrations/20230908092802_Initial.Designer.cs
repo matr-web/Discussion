@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Discussion.DAL.Migrations
 {
     [DbContext(typeof(DiscussDbContext))]
-    [Migration("20230828122222_Test1")]
-    partial class Test1
+    [Migration("20230908092802_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -151,15 +151,11 @@ namespace Discussion.DAL.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -167,9 +163,15 @@ namespace Discussion.DAL.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -179,7 +181,7 @@ namespace Discussion.DAL.Migrations
                     b.HasOne("Discussion.Entities.QuestionEntity", "Question")
                         .WithMany("Answers")
                         .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Discussion.Entities.UserEntity", "User")
@@ -197,7 +199,7 @@ namespace Discussion.DAL.Migrations
                     b.HasOne("Discussion.Entities.CategoryEntity", "Category")
                         .WithMany("Questions")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Discussion.Entities.UserEntity", "User")
@@ -215,12 +217,12 @@ namespace Discussion.DAL.Migrations
                     b.HasOne("Discussion.Entities.AnswerEntity", "Answer")
                         .WithMany("Ratings")
                         .HasForeignKey("AnswerId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.ClientCascade);
 
                     b.HasOne("Discussion.Entities.QuestionEntity", "Question")
                         .WithMany("Ratings")
                         .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.ClientCascade);
 
                     b.HasOne("Discussion.Entities.UserEntity", "User")
                         .WithMany("Ratings")

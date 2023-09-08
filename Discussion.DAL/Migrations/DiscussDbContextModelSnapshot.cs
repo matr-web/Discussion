@@ -51,7 +51,7 @@ namespace Discussion.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AnswerEntity");
+                    b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("Discussion.Entities.CategoryEntity", b =>
@@ -68,7 +68,7 @@ namespace Discussion.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CategoryEntity");
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Discussion.Entities.QuestionEntity", b =>
@@ -178,7 +178,7 @@ namespace Discussion.DAL.Migrations
                     b.HasOne("Discussion.Entities.QuestionEntity", "Question")
                         .WithMany("Answers")
                         .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Discussion.Entities.UserEntity", "User")
@@ -196,7 +196,7 @@ namespace Discussion.DAL.Migrations
                     b.HasOne("Discussion.Entities.CategoryEntity", "Category")
                         .WithMany("Questions")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Discussion.Entities.UserEntity", "User")
@@ -214,12 +214,12 @@ namespace Discussion.DAL.Migrations
                     b.HasOne("Discussion.Entities.AnswerEntity", "Answer")
                         .WithMany("Ratings")
                         .HasForeignKey("AnswerId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.ClientCascade);
 
                     b.HasOne("Discussion.Entities.QuestionEntity", "Question")
                         .WithMany("Ratings")
                         .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.ClientCascade);
 
                     b.HasOne("Discussion.Entities.UserEntity", "User")
                         .WithMany("Ratings")

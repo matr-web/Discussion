@@ -14,9 +14,4 @@ public class CreateAnswerDTO
     /// Question Id.
     /// </summary>
     public int QuestionId { get; set; }
-
-    /// <summary>
-    /// Author Id.
-    /// </summary>
-    public int UserId { get; set; }
 }
