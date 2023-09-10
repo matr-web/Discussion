@@ -1,7 +1,7 @@
 ﻿using Discussion.BLL.Services.Interfaces;
 using Discussion.Models.DTO_s.CategoryDTO_s;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Discussion.WebAPI.Controllers;
 
@@ -42,6 +42,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost("Post")]
+    [Authorize(Roles =$"{StaticData.role_administrator}")]
     public async Task<ActionResult> PostAsync([FromBody] CreateCategoryDTO createCategoryDTO)
     {
         var categoryDTO = await _categoryService.InsertCategoryAsync(createCategoryDTO);
@@ -50,6 +51,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("Put")]
+    [Authorize(Roles = $"{StaticData.role_administrator}")]
     public async Task<ActionResult> PutAsync([FromQuery] int categoryId, [FromBody] UpdateCategoryDTO updateCategoryDTO)
     {
         if (categoryId != updateCategoryDTO.Id)
@@ -63,6 +65,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpDelete("Delete")]
+    [Authorize(Roles = $"{StaticData.role_administrator}")]
     public async Task<ActionResult> DeleteAsync([FromQuery] int categoryId)
     {
         var categoryDTO = await _categoryService.GetCategoryByAsync(g => g.Id == categoryId);

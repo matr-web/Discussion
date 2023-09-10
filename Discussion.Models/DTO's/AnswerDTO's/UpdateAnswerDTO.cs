@@ -14,4 +14,9 @@ public class UpdateAnswerDTO
     /// Content.
     /// </summary>
     public string Content { get; set; }
+
+    /// <summary>
+    /// User Id. 
+    /// </summary>
+    public int UserId { get; set; }
 }

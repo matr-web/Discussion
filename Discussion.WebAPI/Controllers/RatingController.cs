@@ -2,7 +2,6 @@
 using Discussion.Models.DTO_s.RatingDTO_s;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 
 namespace Discussion.WebAPI.Controllers;
 
@@ -64,8 +63,8 @@ public class RatingController : ControllerBase
         return Ok(ratingDTOs);
     }
 
-    [HttpPost("Post")]
     [Authorize]
+    [HttpPost("Post")]
     public async Task<ActionResult> PostAsync([FromBody] CreateRatingDTO createRatingDTO)
     {
         var ratingDTO = await _ratingService.InsertRatingAsync(createRatingDTO, (int)_userService.UserId);
@@ -73,6 +72,7 @@ public class RatingController : ControllerBase
         return Created($"Rating/{ratingDTO.Id}", ratingDTO);
     }
 
+    [Authorize]
     [HttpDelete("Delete")]
     public async Task<ActionResult> DeleteAsync([FromQuery] int ratingId)
     {
@@ -81,6 +81,12 @@ public class RatingController : ControllerBase
         if (ratingDTO == null)
         {
             return NotFound();
+        }
+
+        // Only the Author can Delete a Rating.
+        if (_userService.UserId != ratingDTO.UserId)
+        {
+            return Forbid();
         }
 
         await _ratingService.DeleteRatingAsync(ratingDTO.Id);
