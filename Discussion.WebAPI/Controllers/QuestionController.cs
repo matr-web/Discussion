@@ -44,8 +44,8 @@ public class QuestionController : ControllerBase
         return Ok(questionDTO);
     }
 
-    [HttpPost("Post")]
     [Authorize]
+    [HttpPost("Post")]
     public async Task<ActionResult> PostAsync([FromBody] CreateQuestionDTO createQuestionDTO)
     {
         var questionDTO = await _questionService.InsertQuestionAsync(createQuestionDTO, (int)_userService.UserId);
@@ -53,6 +53,7 @@ public class QuestionController : ControllerBase
         return Created($"Question/{questionDTO.Id}", questionDTO);
     }
 
+    [Authorize]
     [HttpPut("Put")]
     public async Task<ActionResult> PutAsync([FromQuery] int questionId, [FromBody] UpdateQuestionDTO updateQuestionDTO)
     {
@@ -61,19 +62,32 @@ public class QuestionController : ControllerBase
             return BadRequest();
         }
 
+        // Only the Author can Update a Question.
+        if (_userService.UserId != updateQuestionDTO.UserId)
+        {
+            return Forbid();
+        }
+
         var questionDTO = await _questionService.UpdateQuestionAsync(updateQuestionDTO);
 
         return Ok(questionDTO);
     }
 
+    [Authorize]
     [HttpDelete("Delete")]
     public async Task<ActionResult> DeleteAsync([FromQuery] int questionId)
-    {
+    {        
         var questionDTO = await _questionService.GetQuestionByAsync(g => g.Id == questionId);
 
         if (questionDTO == null)
         {
             return NotFound();
+        }
+
+        // Only the Author and Administrator can Delete a Question.
+        if (!_userService.User.IsInRole("Administrator") && _userService.UserId != questionDTO.UserId)
+        {
+            return Forbid();
         }
 
         await _questionService.DeleteQuestionAsync(questionDTO.Id);
