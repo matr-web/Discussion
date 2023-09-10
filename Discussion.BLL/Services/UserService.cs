@@ -54,6 +54,24 @@ public class UserService : IUserService
         return userDTO;
     }
 
+    public async Task<UserWithHashDTO> GetUserWithHashByAsync(Expression<Func<UserEntity, bool>> filterExpression)
+    {
+        // Get UserEntity with fulfill given requirements.
+        var userEntity = await _unitOfWork.UserRepository.GetAsync(filterExpression);
+
+        // If no such User exists, return null.
+        if (userEntity == null)
+        {
+            return null;
+        }
+
+        // Map it to DTO.
+        var userWithHashDTO = UserWithHashDTO.ToUserWithHashDTO(userEntity);
+
+        // Return UserWithHashDTO with mapped UserEntity data.
+        return userWithHashDTO;
+    }
+
     public async Task<UserDTO> RegisterUserAsync(RegisterUserDTO registerUserDto)
     {
         // Hash password.
@@ -83,14 +101,14 @@ public class UserService : IUserService
         return null;
     }
 
-    public async Task<string> GenerateToken(UserDTO userDTO)
+    public async Task<string> GenerateToken(UserWithHashDTO userWithHashDTO)
     {
         // List of Claims.
         List<Claim> claims = new List<Claim> {
-                new Claim(ClaimTypes.NameIdentifier, userDTO.Id.ToString()),
-                new Claim(ClaimTypes.Name, userDTO.Username),
-                new Claim(ClaimTypes.Email, userDTO.Email),
-                new Claim(ClaimTypes.Role, userDTO.Role)
+                new Claim(ClaimTypes.NameIdentifier, userWithHashDTO.Id.ToString()),
+                new Claim(ClaimTypes.Name, userWithHashDTO.Username),
+                new Claim(ClaimTypes.Email, userWithHashDTO.Email),
+                new Claim(ClaimTypes.Role, userWithHashDTO.Role)
             };
 
         // Create Key.
