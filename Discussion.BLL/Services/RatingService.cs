@@ -6,7 +6,6 @@ using Discussion.Models.DTO_s.UserDTO_s;
 using System.Linq.Expressions;
 using Discussion.DAL.Repository.UnitOfWork;
 using Discussion.Models.DTO_s.AnswerDTO_s;
-using Discussion.Models.DTO_s.CategoryDTO_s;
 
 namespace Discussion.BLL.Services;
 
@@ -69,8 +68,8 @@ public class RatingService : IRatingService
         {
             Value = createRatingDTO.Value,
             UserId = userId,
-            QuestionId = createRatingDTO.QuestionId,
-            AnswerId = createRatingDTO.AnswerId
+            QuestionId = createRatingDTO.QuestionId != 0 ? createRatingDTO.QuestionId : null,
+            AnswerId = createRatingDTO.AnswerId != 0 ? createRatingDTO.AnswerId : null,
         };
 
         // Add it...
