@@ -1,14 +1,8 @@
-﻿using Discussion.Models.DTO_s.AnswerDTO_s;
-using Discussion.Models.DTO_s.QuestionDTO_s;
-using Discussion.Models.DTO_s.RatingDTO_s;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Discussion.Models.DTO_s.UserDTO_s;
 
-/// <summary>
-/// A Data Transfer Object for User type.
-/// </summary>
-public class UserDTO
+public class UserWithHashDTO
 {
     /// <summary>
     /// Id.
@@ -32,31 +26,22 @@ public class UserDTO
     public string Role { get; set; }
 
     /// <summary>
-    /// Collection of User's Question's.
+    /// PasswordHash.
     /// </summary>
-    public virtual ICollection<QuestionDTO> Questions { get; set; }
+    public string PasswordHash { get; set; }
 
-    /// <summary>
-    /// Collection of User's Answer's.
-    /// </summary>
-    public virtual ICollection<AnswerDTO> Answers { get; set; }
-
-    /// <summary>
-    /// Collection of User's Ratings's.
-    /// </summary>
-    public virtual ICollection<RatingDTO> Ratings { get; set; }
-
-    public static UserDTO ToUserDTO(object obj)
+    public static UserWithHashDTO ToUserWithHashDTO(object obj)
     {
         Type type = obj.GetType();
         var properties = type.GetProperties();
 
-        var userDTO = new UserDTO()
+        var userDTO = new UserWithHashDTO()
         {
             Id = (int)properties.FirstOrDefault(p => p.Name == "Id").GetValue(obj),
             Username = properties.FirstOrDefault(p => p.Name == "Username").GetValue(obj).ToString(),
             Email = properties.FirstOrDefault(p => p.Name == "Email").GetValue(obj).ToString(),
             Role = properties.FirstOrDefault(p => p.Name == "Role").GetValue(obj).ToString(),
+            PasswordHash = properties.FirstOrDefault(p => p.Name == "PasswordHash").GetValue(obj).ToString()
         };
 
         return userDTO;
