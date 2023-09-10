@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Discussion.WebAPI.ProgramExtensions;
 
+/// <summary>
+/// Authentication Configuration.
+/// </summary>
 public static class AuthenticationSetup
 {
     public static IServiceCollection RegisterAuthentication(this IServiceCollection services, WebApplicationBuilder builder)

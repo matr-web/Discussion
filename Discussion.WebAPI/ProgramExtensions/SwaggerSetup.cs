@@ -3,6 +3,9 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace Discussion.WebAPI.ProgramExtensions;
 
+/// <summary>
+/// Register and Configure Swagger.
+/// </summary>
 public static class SwaggerSetup
 {
     public static IServiceCollection RegisterSwagger(this IServiceCollection services)
