@@ -26,6 +26,13 @@ public interface IUserService
     Task<UserDTO> GetUserByAsync(Expression<Func<UserEntity, bool>> filterExpression, string includeProperties = null);
 
     /// <summary>
+    /// Get a specific User with his hashed password that fulfill given filterExpression.
+    /// </summary>
+    /// <param name="filterExpression">Requirement's that must be fulfilled by a User to be returned.</param>
+    /// <returns>UserWithHashDTO type.</returns>
+    Task<UserWithHashDTO> GetUserWithHashByAsync(Expression<Func<UserEntity, bool>> filterExpression);
+
+    /// <summary>
     /// Register User and save him in the DB.
     /// </summary>
     /// <param name="registerUserDto">DTO that contains data for a User that should be added to the DB.</param>
@@ -35,7 +42,7 @@ public interface IUserService
     /// <summary>
     /// Generate a new Token for a User that is logging in.
     /// </summary>
-    /// <param name="useDTO">A User that we generate a token for.</param>
+    /// <param name="userWithHashDTO">A User that we generate a token for.</param>
     /// <returns>Token with contains given User data.</returns>
-    Task<string> GenerateToken(UserDTO useDTO);
+    Task<string> GenerateToken(UserWithHashDTO userWithHashDTO);
 }

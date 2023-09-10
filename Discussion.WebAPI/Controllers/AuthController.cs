@@ -26,12 +26,12 @@ public class AuthController : ControllerBase
     [HttpPost("Login")]
     public async Task<ActionResult> LoginAsync([FromBody] LoginUserDTO loginUserDTO)
     {
-        var userDTO = await _userService.GetUserByAsync(u => u.Email == loginUserDTO.UsernameOrEmail
+        var userWithHashDTO = await _userService.GetUserWithHashByAsync(u => u.Email == loginUserDTO.UsernameOrEmail
             || u.Username == loginUserDTO.UsernameOrEmail);
 
-        if (userDTO != null && BCrypt.Net.BCrypt.Verify(loginUserDTO.Password, userDTO.PasswordHash))
+        if (userWithHashDTO != null && BCrypt.Net.BCrypt.Verify(loginUserDTO.Password, userWithHashDTO.PasswordHash))
         {
-            var token = await _userService.GenerateToken(userDTO);
+            var token = await _userService.GenerateToken(userWithHashDTO);
 
             return Ok(token);
         }
