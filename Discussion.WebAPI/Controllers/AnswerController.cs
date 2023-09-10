@@ -44,8 +44,8 @@ public class AnswerController : ControllerBase
         return Ok(answerDTO);
     }
 
-    [HttpPost("Post")]
     [Authorize]
+    [HttpPost("Post")]
     public async Task<ActionResult> PostAsync([FromBody] CreateAnswerDTO createAnswerDTO)
     {
         var answerDTO = await _answerService.InsertAnswerAsync(createAnswerDTO, (int)_userService.UserId);
@@ -53,6 +53,7 @@ public class AnswerController : ControllerBase
         return Created($"Answer/{answerDTO.Id}", answerDTO);
     }
 
+    [Authorize]
     [HttpPut("Put")]
     public async Task<ActionResult> PutAsync([FromQuery] int answerId, [FromBody] UpdateAnswerDTO updateAnswerDTO)
     {
@@ -61,11 +62,18 @@ public class AnswerController : ControllerBase
             return BadRequest();
         }
 
+        // Only the Author can Update a Answer.
+        if (_userService.UserId != updateAnswerDTO.UserId)
+        {
+            return Forbid();
+        }
+
         var answerDTO = await _answerService.UpdateAnswerAsync(updateAnswerDTO);
 
         return Ok(answerDTO);
     }
 
+    [Authorize]
     [HttpDelete("Delete")]
     public async Task<ActionResult> DeleteAsync([FromQuery] int answerId)
     {
@@ -74,6 +82,12 @@ public class AnswerController : ControllerBase
         if (answerDTO == null)
         {
             return NotFound();
+        }
+
+        // Only the Author and Administrator can Delete a Answer.
+        if (!_userService.User.IsInRole("Administrator") && _userService.UserId != answerDTO.UserId)
+        {
+            return Forbid();
         }
 
         await _answerService.DeleteAnswerAsync(answerDTO.Id);

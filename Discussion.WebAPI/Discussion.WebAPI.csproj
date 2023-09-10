@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Discussion.BLL\Discussion.BLL.csproj" />
     <ProjectReference Include="..\Discussion.DAL\Discussion.DAL.csproj" />
+    <ProjectReference Include="..\Discussion.Utility\Discussion.Utility.csproj" />
   </ItemGroup>
 
 </Project>
