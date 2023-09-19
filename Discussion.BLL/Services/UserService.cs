@@ -36,42 +36,6 @@ public class UserService : IUserService
 
     public int? UserId => User == null ? null : int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-    public async Task<UserDTO> GetUserByAsync(Expression<Func<UserEntity, bool>> filterExpression, string includeProperties = null)
-    {
-        // Get UserEntity with fulfill given requirements.
-        var userEntity = await _unitOfWork.UserRepository.GetAsync(filterExpression, includeProperties);
-
-        // If no such User exists, return null.
-        if (userEntity == null)
-        { 
-            return null;
-        }
-        
-        // Map it to DTO.
-        var userDTO = MapToUserDTO(userEntity);
-
-        // Return userDTO with mapped UserEntity data.
-        return userDTO;
-    }
-
-    public async Task<UserWithHashDTO> GetUserWithHashByAsync(Expression<Func<UserEntity, bool>> filterExpression)
-    {
-        // Get UserEntity with fulfill given requirements.
-        var userEntity = await _unitOfWork.UserRepository.GetAsync(filterExpression);
-
-        // If no such User exists, return null.
-        if (userEntity == null)
-        {
-            return null;
-        }
-
-        // Map it to DTO.
-        var userWithHashDTO = UserWithHashDTO.ToUserWithHashDTO(userEntity);
-
-        // Return UserWithHashDTO with mapped UserEntity data.
-        return userWithHashDTO;
-    }
-
     public async Task<UserDTO> RegisterUserAsync(RegisterUserDTO registerUserDto)
     {
         // Hash password.
@@ -128,9 +92,55 @@ public class UserService : IUserService
 
         // Write the Token.
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-         
+
         // Return it.
         return jwt;
+    }
+
+    public async Task<UserDTO> GetUserByAsync(Expression<Func<UserEntity, bool>> filterExpression, string includeProperties = null)
+    {
+        // Get UserEntity with fulfill given requirements.
+        var userEntity = await _unitOfWork.UserRepository.GetAsync(filterExpression, includeProperties);
+
+        // If no such User exists, return null.
+        if (userEntity == null)
+        { 
+            return null;
+        }
+        
+        // Map it to DTO.
+        var userDTO = MapToUserDTO(userEntity);
+
+        // Return userDTO with mapped UserEntity data.
+        return userDTO;
+    }
+
+    public async Task<UserWithHashDTO> GetUserWithHashByAsync(Expression<Func<UserEntity, bool>> filterExpression)
+    {
+        // Get UserEntity with fulfill given requirements.
+        var userEntity = await _unitOfWork.UserRepository.GetAsync(filterExpression);
+
+        // If no such User exists, return null.
+        if (userEntity == null)
+        {
+            return null;
+        }
+
+        // Map it to DTO.
+        var userWithHashDTO = UserWithHashDTO.ToUserWithHashDTO(userEntity);
+
+        // Return UserWithHashDTO with mapped UserEntity data.
+        return userWithHashDTO;
+    }
+
+    public async Task DeleteUserAsync(int answerId)
+    {
+        // Get UserEntity that should be deleted.
+        var userEntity = await _unitOfWork.UserRepository.GetAsync(c => c.Id == answerId);
+
+        // Delete it...
+        await _unitOfWork.UserRepository.Remove(userEntity);
+        await _unitOfWork.SaveAsync();
     }
 
     /// <summary>
