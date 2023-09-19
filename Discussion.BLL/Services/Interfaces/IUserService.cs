@@ -18,6 +18,20 @@ public interface IUserService
     int? UserId { get; }
 
     /// <summary>
+    /// Register User and save him in the DB.
+    /// </summary>
+    /// <param name="registerUserDto">DTO that contains data for a User that should be added to the DB.</param>
+    /// <returns>UserDTO type with the current Registered User.</returns>
+    Task<UserDTO> RegisterUserAsync(RegisterUserDTO registerUserDto);
+
+    /// <summary>
+    /// Generate a new Token for a User that is logging in.
+    /// </summary>
+    /// <param name="userWithHashDTO">A User that we generate a token for.</param>
+    /// <returns>Token with contains given User data.</returns>
+    Task<string> GenerateToken(UserWithHashDTO userWithHashDTO);
+
+    /// <summary>
     /// Get a specific User that fulfill given filterExpression.
     /// </summary>
     /// <param name="filterExpression">Requirement's that must be fulfilled by a User to be returned.</param>
@@ -33,16 +47,8 @@ public interface IUserService
     Task<UserWithHashDTO> GetUserWithHashByAsync(Expression<Func<UserEntity, bool>> filterExpression);
 
     /// <summary>
-    /// Register User and save him in the DB.
+    /// Delete given User from the DB.
     /// </summary>
-    /// <param name="registerUserDto">DTO that contains data for a User that should be added to the DB.</param>
-    /// <returns>UserDTO type with the current Registered User.</returns>
-    Task<UserDTO> RegisterUserAsync(RegisterUserDTO registerUserDto);
-
-    /// <summary>
-    /// Generate a new Token for a User that is logging in.
-    /// </summary>
-    /// <param name="userWithHashDTO">A User that we generate a token for.</param>
-    /// <returns>Token with contains given User data.</returns>
-    Task<string> GenerateToken(UserWithHashDTO userWithHashDTO);
+    /// <param name="userId">Id of User that should be deleted.</param>
+    Task DeleteUserAsync(int userId);
 }
