@@ -18,7 +18,7 @@ public class AuthController : ControllerBase
     [HttpPost("Register")]
     public async Task<ActionResult> RegisterAsync([FromBody] RegisterUserDTO registerUserDTO)
     {
-        var userDTO = await _userService.RegisterUserAsync(registerUserDTO);
+        var userDTO = await _userService.GetUserByAsync(u => u.Username == registerUserDTO.Username || u.Email == registerUserDTO.Email);
 
         if(userDTO != null)
         {
