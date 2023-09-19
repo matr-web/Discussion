@@ -18,9 +18,16 @@ public class AuthController : ControllerBase
     [HttpPost("Register")]
     public async Task<ActionResult> RegisterAsync([FromBody] RegisterUserDTO registerUserDTO)
     {
-        var userDTO = await _userService.RegisterUserAsync(registerUserDTO);
+        var userDTO = await _userService.GetUserByAsync(u => u.Username == registerUserDTO.Username || u.Email == registerUserDTO.Email);
 
-        return Created($"User/{userDTO.Id}", userDTO);
+        if(userDTO != null)
+        {
+            return BadRequest("User with given User Name or Email already exists.");
+        }
+
+        var registeredUserDTO = await _userService.RegisterUserAsync(registerUserDTO);
+
+        return Created($"User/{registeredUserDTO.Id}", registeredUserDTO);
     }
 
     [HttpPost("Login")]
