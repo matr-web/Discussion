@@ -1,6 +1,7 @@
 ﻿using Discussion.BLL.Services.Interfaces;
 using Discussion.Models.DTO_s.UserDTO_s;
 using Microsoft.AspNetCore.Mvc;
+using Discussion.Models.DTO_s.EmailDTO_s;
 
 namespace Discussion.WebAPI.Controllers;
 
@@ -9,10 +10,12 @@ namespace Discussion.WebAPI.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IEmailService _emailService;
 
-    public AuthController(IUserService userService)
+    public AuthController(IUserService userService, IEmailService emailService)
     {
         _userService = userService;
+        _emailService = emailService;
     }
 
     [HttpPost("Register")]
@@ -26,6 +29,8 @@ public class AuthController : ControllerBase
         }
 
         var registeredUserDTO = await _userService.RegisterUserAsync(registerUserDTO);
+
+        _emailService.SendRegistrationEmail(registeredUserDTO.Email);
 
         return Created($"User/{registeredUserDTO.Id}", registeredUserDTO);
     }

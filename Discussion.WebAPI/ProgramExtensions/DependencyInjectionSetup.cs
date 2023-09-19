@@ -17,6 +17,7 @@ public static class DependencyInjectionSetup
         // Register Services.
         services.AddScoped<IAnswerService, AnswerService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IQuestionService, QuestionService>();
         services.AddScoped<IRatingService, RatingService>();
         services.AddScoped<IUserService, UserService>();
