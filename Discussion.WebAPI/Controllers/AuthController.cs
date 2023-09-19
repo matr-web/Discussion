@@ -20,7 +20,14 @@ public class AuthController : ControllerBase
     {
         var userDTO = await _userService.RegisterUserAsync(registerUserDTO);
 
-        return Created($"User/{userDTO.Id}", userDTO);
+        if(userDTO != null)
+        {
+            return BadRequest("User with given User Name or Email already exists.");
+        }
+
+        var registeredUserDTO = await _userService.RegisterUserAsync(registerUserDTO);
+
+        return Created($"User/{registeredUserDTO.Id}", registeredUserDTO);
     }
 
     [HttpPost("Login")]
