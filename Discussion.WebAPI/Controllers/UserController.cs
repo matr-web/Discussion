@@ -11,12 +11,14 @@ namespace Discussion.WebAPI.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IEmailService _emailService;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, IEmailService emailService)
     {
         _userService = userService;
+        _emailService = emailService;
     }
-    
+
     [HttpGet("Get")]
     public async Task<ActionResult<UserDTO>> GetAsync([FromQuery] string? userNameOrEmail)
     {
@@ -48,6 +50,8 @@ public class UserController : ControllerBase
         }
 
         await _userService.DeleteUserAsync(userDTO.Id);
+
+        _emailService.SendAccountDeleteEmail(userDTO.Email);
 
         return NoContent();
     }
