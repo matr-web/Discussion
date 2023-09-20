@@ -1,7 +1,6 @@
 ﻿using Discussion.BLL.Services.Interfaces;
 using Discussion.Models.DTO_s.UserDTO_s;
 using Microsoft.AspNetCore.Mvc;
-using Discussion.Models.DTO_s.EmailDTO_s;
 
 namespace Discussion.WebAPI.Controllers;
 
