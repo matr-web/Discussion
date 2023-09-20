@@ -22,9 +22,21 @@ public class EmailService : IEmailService
         var emailDTO = new EmailDTO();
 
         emailDTO.To = to;
-        emailDTO.Subject = "Registration";
+        emailDTO.Subject = "Discussion - Registration";
         emailDTO.Body = "<h1>You have successfully registered.</h1>" +
             "<h2>Have fun and learn new things!</h2>";
+
+        SendEmail(emailDTO);
+    }
+
+    public void SendAccountDeleteEmail(string to)
+    {
+        var emailDTO = new EmailDTO();
+
+        emailDTO.To = to;
+        emailDTO.Subject = "Discussion - Account has been deleted";
+        emailDTO.Body = "<h1>You have successfully deleted your account.</h1>" +
+            "<h2>We hope we can see You again soon!</h2>";
 
         SendEmail(emailDTO);
     }
