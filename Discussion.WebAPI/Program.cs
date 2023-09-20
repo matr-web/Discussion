@@ -2,6 +2,8 @@ using Discussion.WebAPI.ProgramExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.RegisterCors(builder);
+
 builder.Services.RegisterDatabase(builder);
 
 builder.Services.RegisterServices();
@@ -17,6 +19,8 @@ builder.Services.RegisterSwagger();
 builder.Services.RegisterAuthentication(builder);
 
 var app = builder.Build();
+
+app.UseCors("FrontEndClient");
 
 app.ConfigureSwagger();
 
