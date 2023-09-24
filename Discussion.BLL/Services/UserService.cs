@@ -6,7 +6,6 @@ using Discussion.Models.DTO_s.QuestionDTO_s;
 using System.Linq.Expressions;
 using Discussion.Models.DTO_s.AnswerDTO_s;
 using Discussion.Models.DTO_s.RatingDTO_s;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -19,15 +18,12 @@ namespace Discussion.BLL.Services;
 public class UserService : IUserService
 {
     private readonly IUnitOfWork _unitOfWork;
-    //private readonly IConfiguration _configuration;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly AuthenticationSettings _authenticationSettings;
 
-    public UserService(IUnitOfWork unitOfWork, IConfiguration configuration, 
-        IHttpContextAccessor httpContextAccessor, AuthenticationSettings authenticationSettings)
+    public UserService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, AuthenticationSettings authenticationSettings)
     {
-        _unitOfWork = unitOfWork; 
-        //_configuration = configuration;
+        _unitOfWork = unitOfWork;
         _httpContextAccessor = httpContextAccessor;
         _authenticationSettings = authenticationSettings;
     }
@@ -36,18 +32,18 @@ public class UserService : IUserService
 
     public int? UserId => User == null ? null : int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-    public async Task<UserDTO> RegisterUserAsync(RegisterUserDTO registerUserDto)
+    public async Task<UserDTO> RegisterUserAsync(RegisterUserDTO registerUserDTO)
     {
         // Hash password.
         string passwordHash
-                = BCrypt.Net.BCrypt.HashPassword(registerUserDto.Password);
+                = BCrypt.Net.BCrypt.HashPassword(registerUserDTO.Password);
 
         // Create UserEntity type with current registered User data.
         var user = new UserEntity();
 
-        user.Username = registerUserDto.Username;
-        user.Email = registerUserDto.Email;
-        user.Role = registerUserDto.Role;
+        user.Username = registerUserDTO.Username;
+        user.Email = registerUserDTO.Email;
+        user.Role = registerUserDTO.Role;
         user.PasswordHash = passwordHash;
 
         // Add it...
@@ -104,10 +100,10 @@ public class UserService : IUserService
 
         // If no such User exists, return null.
         if (userEntity == null)
-        { 
+        {
             return null;
         }
-        
+
         // Map it to DTO.
         var userDTO = MapToUserDTO(userEntity);
 
@@ -131,6 +127,32 @@ public class UserService : IUserService
 
         // Return UserWithHashDTO with mapped UserEntity data.
         return userWithHashDTO;
+    }
+
+    public async Task<UserDTO> ChangePasswordAsync(ChangeUserPasswordDTO changeUserPasswordDTO)
+    {
+         // Get UserEntity with fulfill given requirements.
+        var userEntity = await _unitOfWork.UserRepository.GetAsync(u => u.Id == changeUserPasswordDTO.Id);
+
+        // If no such User exists, return null.
+        if (userEntity == null)
+        {
+            return null;
+        }
+
+        // Hash new password.
+        string passwordHash = BCrypt.Net.BCrypt
+                .ValidateAndReplacePassword(changeUserPasswordDTO.CurrentPassword, userEntity.PasswordHash, changeUserPasswordDTO.NewPassword);
+
+        // Set the new password hash.
+        userEntity.PasswordHash = passwordHash;
+
+        // Update the entity in DB.
+        await _unitOfWork.UserRepository.UpdateAsync(userEntity);   
+        await _unitOfWork.SaveAsync();
+
+        // Return the User as DTO.
+        return UserDTO.ToUserDTO(userEntity);
     }
 
     public async Task DeleteUserAsync(int answerId)
