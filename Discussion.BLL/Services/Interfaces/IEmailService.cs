@@ -13,4 +13,10 @@ public interface IEmailService
     /// </summary>
     /// <param name="to">Email of the User to whom we send the confirmation.</param>
     void SendAccountDeleteEmail(string to);
+
+    /// <summary>
+    /// Send an Email that confirm's the Password change operation was successful.
+    /// </summary>
+    /// <param name="to">Email of the User to whom we send the confirmation.</param>
+    void SendPasswordChangeConfirmationEmail(string to);
 }
