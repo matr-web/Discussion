@@ -19,26 +19,45 @@ public class EmailService : IEmailService
 
     public void SendRegistrationEmail(string to)
     {
-        var emailDTO = new EmailDTO();
-
-        emailDTO.To = to;
-        emailDTO.Subject = "Discussion - Registration";
-        emailDTO.Body = "<h1>You have successfully registered.</h1>" +
+        var subject = "Discussion - Registration";
+        var body = "<h1>You have successfully registered.</h1>" +
             "<h2>Have fun and learn new things!</h2>";
+
+        var emailDTO = CreateEmail(to, subject, body);
+
+        SendEmail(emailDTO);
+    }
+
+    public void SendPasswordChangeConfirmationEmail(string to)
+    {
+        var subject = "Discussion - Password change was successful";
+        var body = "<h1>You have successfully changed your password.</h1>" +
+             "<h2>Have fun and learn new things!</h2>";
+
+        var emailDTO = CreateEmail(to, subject, body);
 
         SendEmail(emailDTO);
     }
 
     public void SendAccountDeleteEmail(string to)
     {
-        var emailDTO = new EmailDTO();
-
-        emailDTO.To = to;
-        emailDTO.Subject = "Discussion - Account has been deleted";
-        emailDTO.Body = "<h1>You have successfully deleted your account.</h1>" +
+        var subject = "Discussion - Account has been deleted";
+        var body = "<h1>You have successfully deleted your account.</h1>" +
             "<h2>We hope we can see You again soon!</h2>";
 
+        var emailDTO = CreateEmail(to, subject, body);
+
         SendEmail(emailDTO);
+    }
+
+    private EmailDTO CreateEmail(string to, string subject, string body)
+    {
+        return new EmailDTO()
+        {
+            To = to,
+            Subject = subject,  
+            Body = body
+        };
     }
 
     private void SendEmail(EmailDTO emailDTO)
