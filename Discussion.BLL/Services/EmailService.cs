@@ -21,10 +21,16 @@ public class EmailService : IEmailService
     {
         var emailDTO = new EmailDTO();
 
-        emailDTO.To = to;
-        emailDTO.Subject = "Discussion - Registration";
-        emailDTO.Body = "<h1>You have successfully registered.</h1>" +
-            "<h2>Have fun and learn new things!</h2>";
+        var emailDTO = CreateEmail(to, subject, body);
+
+        SendEmail(emailDTO);
+    }
+
+    public void SendPasswordChangeConfirmationEmail(string to)
+    {
+        var subject = "Discussion - Password change";
+        var body = "<h1>You have successfully changed your password.</h1>" +
+             "<h2>Have fun and learn new things!</h2>";
 
         SendEmail(emailDTO);
     }
