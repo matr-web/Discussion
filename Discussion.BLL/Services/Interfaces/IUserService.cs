@@ -47,6 +47,13 @@ public interface IUserService
     Task<UserWithHashDTO> GetUserWithHashByAsync(Expression<Func<UserEntity, bool>> filterExpression);
 
     /// <summary>
+    /// Change User's Password.
+    /// </summary>
+    /// <param name="changeUserPasswordDTO">DTO that contains new Password data.</param>
+    /// <returns>UserDTO type.</returns>
+    Task<UserDTO> ChangePasswordAsync(ChangeUserPasswordDTO changeUserPasswordDTO);
+
+    /// <summary>
     /// Delete given User from the DB.
     /// </summary>
     /// <param name="userId">Id of User that should be deleted.</param>

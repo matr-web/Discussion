@@ -1,5 +1,6 @@
 ﻿using Discussion.BLL.Services.Interfaces;
 using Discussion.Models.DTO_s.UserDTO_s;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Discussion.WebAPI.Controllers;
@@ -22,7 +23,7 @@ public class AuthController : ControllerBase
     {
         var userDTO = await _userService.GetUserByAsync(u => u.Username == registerUserDTO.Username || u.Email == registerUserDTO.Email);
 
-        if(userDTO != null)
+        if (userDTO != null)
         {
             return BadRequest("User with given User Name or Email already exists.");
         }
@@ -48,5 +49,29 @@ public class AuthController : ControllerBase
         }
 
         return BadRequest("Wrong Username or Password.");
+    }
+
+    [Authorize]
+    [HttpPost("ChangePassword")]
+    public async Task<ActionResult> ChangePasswordAsync([FromBody] ChangeUserPasswordDTO changeUserPasswordDTO)
+    {
+        // Only User by himself can change his own Password.
+        if (_userService.UserId != changeUserPasswordDTO.Id)
+        {
+            return Forbid();
+        }
+
+        var userWithHashDTO = await _userService.GetUserWithHashByAsync(u => u.Id == changeUserPasswordDTO.Id);
+
+        if(BCrypt.Net.BCrypt.Verify(changeUserPasswordDTO.CurrentPassword, userWithHashDTO.PasswordHash))
+        {
+            var userDTO = await _userService.ChangePasswordAsync(changeUserPasswordDTO);
+
+            _emailService.SendPasswordChangeConfirmationEmail(userDTO.Email);
+
+            return Ok("Password has been Updated successfully."); 
+        }
+
+        return BadRequest("Your current Password is different.");
     }
 }
