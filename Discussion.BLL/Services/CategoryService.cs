@@ -39,7 +39,7 @@ public class CategoryService : ICategoryService
         }
 
         // Return Collection of CategoryDTO type.
-        return categoryDTOList; 
+        return categoryDTOList.OrderBy(c => c.Name); 
     }
 
     public async Task<CategoryDTO> GetCategoryByAsync(Expression<Func<CategoryEntity, bool>> filterExpression, string includeProperties = null)
