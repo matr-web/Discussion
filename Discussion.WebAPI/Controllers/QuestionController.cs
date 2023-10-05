@@ -19,9 +19,14 @@ public class QuestionController : ControllerBase
     }
 
     [HttpGet("GetAll")]
-    public async Task<ActionResult<IEnumerable<QuestionDTO>>> GetAllAsync()
+    public async Task<ActionResult<IEnumerable<QuestionDTO>>> GetAllAsync(int categoryId, string? searchPhrase)
     {
-        var questionDTOs = await _questionService.GetQuestionsAsync(includeProperties: "Category,User,Ratings");
+        var questionDTOs = await _questionService.GetQuestionsAsync(q => q.CategoryId == categoryId, includeProperties: "Category,User,Ratings");
+
+        if(searchPhrase != null)
+        {
+            questionDTOs = questionDTOs.Where(q => q.Topic.ToLower().Contains(searchPhrase.ToLower()));
+        }        
 
         if (questionDTOs == null || questionDTOs.Count() == 0)
         {
