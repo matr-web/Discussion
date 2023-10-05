@@ -30,8 +30,6 @@ BEGIN TRY
 
 		SET IDENTITY_INSERT Categories OFF;
 
-		DELETE FROM Questions;
-
 		--Seed Question's.
 		SET IDENTITY_INSERT Questions ON;
 
