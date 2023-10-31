@@ -30,6 +30,11 @@ public class AuthController : ControllerBase
 
         var registeredUserDTO = await _userService.RegisterUserAsync(registerUserDTO);
 
+        if(registeredUserDTO == null) 
+        { 
+            return NotFound();
+        }
+
         _emailService.SendRegistrationEmail(registeredUserDTO.Email);
 
         return Created($"User/{registeredUserDTO.Id}", registeredUserDTO);
@@ -43,7 +48,7 @@ public class AuthController : ControllerBase
 
         if (userWithHashDTO != null && BCrypt.Net.BCrypt.Verify(loginUserDTO.Password, userWithHashDTO.PasswordHash))
         {
-            var token = await _userService.GenerateToken(userWithHashDTO);
+            var token = _userService.GenerateToken(userWithHashDTO);
 
             return Ok(token);
         }
@@ -66,6 +71,11 @@ public class AuthController : ControllerBase
         if(BCrypt.Net.BCrypt.Verify(changeUserPasswordDTO.CurrentPassword, userWithHashDTO.PasswordHash))
         {
             var userDTO = await _userService.ChangePasswordAsync(changeUserPasswordDTO);
+
+            if(userDTO == null)
+            {
+                return NotFound();
+            }
 
             _emailService.SendPasswordChangeConfirmationEmail(userDTO.Email);
 

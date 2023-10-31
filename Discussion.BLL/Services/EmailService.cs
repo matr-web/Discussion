@@ -5,16 +5,19 @@ using MimeKit.Text;
 using MimeKit;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Discussion.BLL.Services;
 
 public class EmailService : IEmailService
 {
     private readonly IConfiguration _config;
+    private readonly ILogger<EmailService> _logger;
 
-    public EmailService(IConfiguration config)
+    public EmailService(IConfiguration config, ILogger<EmailService> logger)
     {
         _config = config;
+        _logger = logger;
     }
 
     public void SendRegistrationEmail(string to)
@@ -26,6 +29,8 @@ public class EmailService : IEmailService
         var emailDTO = CreateEmail(to, subject, body);
 
         SendEmail(emailDTO);
+
+        _logger.LogInformation($"Email confirming the registration was successfully, has been send to: {to}");
     }
 
     public void SendPasswordChangeConfirmationEmail(string to)
@@ -37,6 +42,8 @@ public class EmailService : IEmailService
         var emailDTO = CreateEmail(to, subject, body);
 
         SendEmail(emailDTO);
+
+        _logger.LogInformation($"Email confirming that the password has been changed successfully, has been send to: {to}");
     }
 
     public void SendAccountDeleteEmail(string to)
@@ -48,6 +55,8 @@ public class EmailService : IEmailService
         var emailDTO = CreateEmail(to, subject, body);
 
         SendEmail(emailDTO);
+
+        _logger.LogInformation($"Email confirming that the User has deleted the account successfully, has been send to: {to}");
     }
 
     private EmailDTO CreateEmail(string to, string subject, string body)
@@ -62,16 +71,23 @@ public class EmailService : IEmailService
 
     private void SendEmail(EmailDTO emailDTO)
     {
-        var email = new MimeMessage();
-        email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailConfiguration:EmailUsername").Value));
-        email.To.Add(MailboxAddress.Parse(emailDTO.To));
-        email.Subject = emailDTO.Subject;
-        email.Body = new TextPart(TextFormat.Html) { Text = emailDTO.Body };
+        try
+        {
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailConfiguration:EmailUsername").Value));
+            email.To.Add(MailboxAddress.Parse(emailDTO.To));
+            email.Subject = emailDTO.Subject;
+            email.Body = new TextPart(TextFormat.Html) { Text = emailDTO.Body };
 
-        using var smtp = new SmtpClient();
-        smtp.Connect(_config.GetSection("EmailConfiguration:EmailHost").Value, 587, SecureSocketOptions.StartTls);
-        smtp.Authenticate(_config.GetSection("EmailConfiguration:EmailUsername").Value, _config.GetSection("EmailConfiguration:EmailPassword").Value);
-        smtp.Send(email);
-        smtp.Disconnect(true);
+            using var smtp = new SmtpClient();
+            smtp.Connect(_config.GetSection("EmailConfiguration:EmailHost").Value, 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate(_config.GetSection("EmailConfiguration:EmailUsername").Value, _config.GetSection("EmailConfiguration:EmailPassword").Value);
+            smtp.Send(email);
+            smtp.Disconnect(true);
+        }
+        catch(Exception ex) 
+        {
+            _logger.LogWarning($"There occurred an error while sending the email. Error: {ex.Message}");
+        }
     }
 }
