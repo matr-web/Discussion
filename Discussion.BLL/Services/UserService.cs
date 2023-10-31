@@ -12,6 +12,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Discussion.Models.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Discussion.BLL.Services;
 
@@ -20,19 +21,22 @@ public class UserService : IUserService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly AuthenticationSettings _authenticationSettings;
+    private readonly ILogger<UserService> _logger;
 
-    public UserService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, AuthenticationSettings authenticationSettings)
+    public UserService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor,
+        AuthenticationSettings authenticationSettings, ILogger<UserService> logger)
     {
         _unitOfWork = unitOfWork;
         _httpContextAccessor = httpContextAccessor;
         _authenticationSettings = authenticationSettings;
+        _logger = logger;
     }
 
     public ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
 
     public int? UserId => User == null ? null : int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-    public async Task<UserDTO> RegisterUserAsync(RegisterUserDTO registerUserDTO)
+    public async Task<UserDTO?> RegisterUserAsync(RegisterUserDTO registerUserDTO)
     {
         // Hash password.
         string passwordHash
@@ -46,22 +50,31 @@ public class UserService : IUserService
         user.Role = registerUserDTO.Role;
         user.PasswordHash = passwordHash;
 
-        // Add it...
-        await _unitOfWork.UserRepository.AddAsync(user);
-        var entriesWrittenCount = await _unitOfWork.SaveAsync();
-
-        // If the User is added to the DB return a DTO with his data.
-        if (entriesWrittenCount >= 1)
+        try
         {
+            // Add it...
+            await _unitOfWork.UserRepository.AddAsync(user);
+            await _unitOfWork.SaveAsync(); // Save the count of entries written in the db.
+
+            // Log the information, that the User has been registered successfully.
+            _logger.LogInformation($"User: {registerUserDTO.Username}, Email: {registerUserDTO.Email}, Role: {registerUserDTO.Role}" +
+           $"- Has been registered successfully.");
+
+            // If the User is added to the DB return a DTO with his data.
             var userEntity = await _unitOfWork.UserRepository.GetAsync(u => u.Email == user.Email);
             return UserDTO.ToUserDTO(userEntity);
         }
+        catch (Exception ex) 
+        {
+            // Log the information about the exception.
+            _logger.LogWarning($"User: {registerUserDTO.Username}, Email: {registerUserDTO.Email}, Role: {registerUserDTO.Role} failed to register." +
+                $" Error Message: {ex.Message}");
+        }
 
-        // if not return null.
         return null;
     }
 
-    public async Task<string> GenerateToken(UserWithHashDTO userWithHashDTO)
+    public string GenerateToken(UserWithHashDTO userWithHashDTO)
     {
         // List of Claims.
         List<Claim> claims = new List<Claim> {
@@ -93,7 +106,7 @@ public class UserService : IUserService
         return jwt;
     }
 
-    public async Task<UserDTO> GetUserByAsync(Expression<Func<UserEntity, bool>> filterExpression, string includeProperties = null)
+    public async Task<UserDTO?> GetUserByAsync(Expression<Func<UserEntity, bool>> filterExpression, string includeProperties = null)
     {
         // Get UserEntity with fulfill given requirements.
         var userEntity = await _unitOfWork.UserRepository.GetAsync(filterExpression, includeProperties);
@@ -111,7 +124,7 @@ public class UserService : IUserService
         return userDTO;
     }
 
-    public async Task<UserWithHashDTO> GetUserWithHashByAsync(Expression<Func<UserEntity, bool>> filterExpression)
+    public async Task<UserWithHashDTO?> GetUserWithHashByAsync(Expression<Func<UserEntity, bool>> filterExpression)
     {
         // Get UserEntity with fulfill given requirements.
         var userEntity = await _unitOfWork.UserRepository.GetAsync(filterExpression);
@@ -129,7 +142,7 @@ public class UserService : IUserService
         return userWithHashDTO;
     }
 
-    public async Task<UserDTO> ChangePasswordAsync(ChangeUserPasswordDTO changeUserPasswordDTO)
+    public async Task<UserDTO?> ChangePasswordAsync(ChangeUserPasswordDTO changeUserPasswordDTO)
     {
          // Get UserEntity with fulfill given requirements.
         var userEntity = await _unitOfWork.UserRepository.GetAsync(u => u.Id == changeUserPasswordDTO.Id);
@@ -147,12 +160,27 @@ public class UserService : IUserService
         // Set the new password hash.
         userEntity.PasswordHash = passwordHash;
 
-        // Update the entity in DB.
-        await _unitOfWork.UserRepository.UpdateAsync(userEntity);   
-        await _unitOfWork.SaveAsync();
+        try
+        {
+            // Update the entity in DB.
+            await _unitOfWork.UserRepository.UpdateAsync(userEntity);
+            await _unitOfWork.SaveAsync();
 
-        // Return the User as DTO.
-        return UserDTO.ToUserDTO(userEntity);
+            // Log the information, that the User has changed the password successfully.
+            _logger.LogInformation($"Id: {userEntity.Id}, User: {userEntity.Username}, Email: {userEntity.Email}" 
+                + $"- Has changed password successfully.");
+
+            // Return the User as DTO.
+            return UserDTO.ToUserDTO(userEntity);
+        }
+        catch(Exception ex) 
+        {
+            // Log the information about the exception.
+            _logger.LogWarning($"Id: {userEntity.Id}, User: {userEntity.Username}, Email: {userEntity.Email}" 
+                + $"- Has failed to change password. Error Message: {ex.Message}");
+        }
+
+        return null;
     }
 
     public async Task DeleteUserAsync(int answerId)
@@ -160,9 +188,22 @@ public class UserService : IUserService
         // Get UserEntity that should be deleted.
         var userEntity = await _unitOfWork.UserRepository.GetAsync(c => c.Id == answerId);
 
-        // Delete it...
-        await _unitOfWork.UserRepository.Remove(userEntity);
-        await _unitOfWork.SaveAsync();
+        try
+        {
+            // Delete it...
+            await _unitOfWork.UserRepository.Remove(userEntity);
+            await _unitOfWork.SaveAsync();
+
+            // Log the information, that the User has deleted the account successfully.
+            _logger.LogInformation($"Id: {userEntity.Id}, User: {userEntity.Username}, Email: {userEntity.Email}"
+             + $"- Has been deleted successfully.");
+        }
+        catch(Exception ex)
+        {
+            // Log the information about the exception.
+            _logger.LogWarning($"Id: {userEntity.Id}, User: {userEntity.Username}, Email: {userEntity.Email}"
+              + $"- Has failed to delete the Account. Error Message: {ex.Message}");
+        }
     }
 
     /// <summary>
