@@ -38,7 +38,7 @@ public class CategoryService : ICategoryService
             categoryDTOList.Add(categoryDTO);
         }
 
-        // Return Collection of CategoryDTO type.
+        // Return Collection of CategoryDTO type orderd by the Name property.
         return categoryDTOList.OrderBy(c => c.Name); 
     }
 
@@ -136,5 +136,24 @@ public class CategoryService : ICategoryService
         }
 
         return categoryDTO;
+    }
+
+    public PaginatedCategoryDTOs PaginateCategories(IEnumerable<CategoryDTO> categoryDTOs, int currentPage, int pageSize)
+    {
+        // Get the count of all categories.
+        var cateogoriesCount = categoryDTOs.Count();
+
+        // Calculate the total pages count.
+        var totalPages = (int)Math.Ceiling((decimal)cateogoriesCount / pageSize);
+
+        // Get the element's on given page.
+        categoryDTOs = categoryDTOs
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        var paginatedCategoriesDTOs = PaginatedCategoryDTOs.ToPaginatedCategoriesDTO(categoryDTOs, currentPage, totalPages);
+
+        return paginatedCategoriesDTOs;
     }
 }
