@@ -9,10 +9,11 @@ public interface IQuestionService
     /// <summary>
     /// Get all Questions that fulfill given filterExpression if it is given. If not Get all Questions.
     /// </summary>
+    /// <param name="orderByProperty">Property based on which the returned QuestionDTO's should be ordered.</param>
     /// <param name="filterExpression">Optional requirement's that must be fulfilled if given.</param>
     /// <param name="includeProperties">Optional related properties.</param>
     /// <returns>Collection of QuestionDTO type.</returns>
-    Task<IEnumerable<QuestionDTO>> GetQuestionsAsync(Expression<Func<QuestionEntity, bool>> filterExpression = null, string includeProperties = null);
+    Task<IEnumerable<QuestionDTO>> GetQuestionsAsync(string orderByProperty, Expression<Func<QuestionEntity, bool>> filterExpression = null, string includeProperties = null);
 
     /// <summary>
     /// Get a specific Question that fulfill given filterExpression.
@@ -42,4 +43,13 @@ public interface IQuestionService
     /// </summary>
     /// <param name="questionId">Id of Question that should be deleted.</param>
     Task DeleteQuestionAsync(int questionId);
+
+    /// <summary>
+    /// Paginate QuestionDTO's.
+    /// </summary>
+    /// <param name="questionDTOs">Collection of QuestionDTO's that will be paginated.</param>
+    /// <param name="currentPage">Current page value.</param>
+    /// <param name="pageSize">The size of each page.</param>
+    /// <returns>Collection of QuestionDTO's that should be on the given page. Current page number and the over all count of pages.</returns>
+    PaginatedQuestionDTOs PaginateQuestions(IEnumerable<QuestionDTO> questionDTOs, int currentPage, int pageSize);
 }

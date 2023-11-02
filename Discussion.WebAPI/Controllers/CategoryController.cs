@@ -16,7 +16,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet("GetAll")]
-    public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetAllAsync()
+    public async Task<ActionResult<PaginatedCategoryDTOs>> GetAllAsync(int currentPage = 1)
     {
         var categoryDTOs = await _categoryService.GetCategoriesAsync();
 
@@ -24,8 +24,9 @@ public class CategoryController : ControllerBase
         {
             return NotFound();
         }
+        var paginatedCategoryDTOs = _categoryService.PaginateCategories(categoryDTOs, currentPage, 2);
 
-        return Ok(categoryDTOs);
+        return Ok(paginatedCategoryDTOs);
     }
 
     [HttpGet("Get")]

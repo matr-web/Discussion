@@ -1,5 +1,6 @@
 ﻿using Discussion.Entities;
 using Discussion.Models.DTO_s.CategoryDTO_s;
+using Discussion.Models.DTO_s.QuestionDTO_s;
 using System.Linq.Expressions;
 
 namespace Discussion.BLL.Services.Interfaces;
@@ -41,4 +42,13 @@ public interface ICategoryService
     /// </summary>
     /// <param name="categoryId">Id of Category that should be deleted.</param>
     Task DeleteCategoryAsync(int categoryId);
+
+    /// <summary>
+    /// Paginate CategoryDTO's.
+    /// </summary>
+    /// <param name="categoryDTOs">Collection of CategoryDTO's that will be paginated.</param>
+    /// <param name="currentPage">Current page value.</param>
+    /// <param name="pageSize">The size of each page.</param>
+    /// <returns>Collection of CategoryDTO's that should be on the given page. Current page number and the over all count of pages.</returns>
+    PaginatedCategoryDTOs PaginateCategories(IEnumerable<CategoryDTO> categoryDTOs, int currentPage, int pageSize);
 }

@@ -6,6 +6,7 @@ using Discussion.Models.DTO_s.CategoryDTO_s;
 using Discussion.Models.DTO_s.QuestionDTO_s;
 using Discussion.Models.DTO_s.RatingDTO_s;
 using Discussion.Models.DTO_s.UserDTO_s;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Discussion.BLL.Services;
@@ -19,7 +20,7 @@ public class QuestionService : IQuestionService
         _unitOfWork = unitOfWork;
     } 
 
-    public async Task<IEnumerable<QuestionDTO>> GetQuestionsAsync(Expression<Func<QuestionEntity, bool>> filterExpression = null, string includeProperties = null)
+    public async Task<IEnumerable<QuestionDTO>> GetQuestionsAsync(string orderByProperty, Expression<Func<QuestionEntity, bool>> filterExpression = null, string includeProperties = null)
     {
         // Get all needed Question Entities with fulfill given requirements.
         var questionEntityCollection = await _unitOfWork.QuestionRepository.GetAllAsync(filterExpression, includeProperties);
@@ -40,8 +41,8 @@ public class QuestionService : IQuestionService
             questionDTOList.Add(questionDTO);
         }
 
-        // Return Collection of QuestionDTO type.
-        return questionDTOList;
+        // Return ordered collection of QuestionDTO type.
+        return questionDTOList.OrderBy(q => q.GetType().GetProperty(orderByProperty).GetValue(q));
     }
 
     public async Task<QuestionDTO> GetQuestionByAsync(Expression<Func<QuestionEntity, bool>> filterExpression, string includeProperties = null)
@@ -113,6 +114,25 @@ public class QuestionService : IQuestionService
         // Delete it...
         await _unitOfWork.QuestionRepository.Remove(questionEntity);
         await _unitOfWork.SaveAsync();
+    }
+
+    public PaginatedQuestionDTOs PaginateQuestions(IEnumerable<QuestionDTO> questionDTOs, int currentPage, int pageSize)
+    {
+        // Get the count of all questions.
+        var questionCount = questionDTOs.Count();
+
+        // Calculate the total pages count.
+        var totalPages = (int)Math.Ceiling((decimal)questionCount / pageSize);
+
+        // Get the element's on given page.
+        questionDTOs = questionDTOs
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        var paginatedQuestionDTOs = PaginatedQuestionDTOs.ToPaginatedQuestionsDTO(questionDTOs, currentPage, totalPages);
+
+        return paginatedQuestionDTOs;
     }
 
     /// <summary>
