@@ -19,9 +19,11 @@ public class QuestionController : ControllerBase
     }
 
     [HttpGet("GetAll")]
-    public async Task<ActionResult<IEnumerable<QuestionDTO>>> GetAllAsync(int categoryId, string? searchPhrase)
+    public async Task<ActionResult<PaginatedQuestionDTOs>> GetAllAsync
+        (int categoryId, string? searchPhrase, string orderByProperty = "Topic", int currentPage = 1)
     {
-        var questionDTOs = await _questionService.GetQuestionsAsync(q => q.CategoryId == categoryId, includeProperties: "Category,User,Ratings");
+        var questionDTOs = await _questionService
+            .GetQuestionsAsync(orderByProperty, q => q.CategoryId == categoryId, includeProperties: "Category,User,Ratings");
 
         if(searchPhrase != null)
         {
@@ -33,7 +35,9 @@ public class QuestionController : ControllerBase
             return NotFound();
         }
 
-        return Ok(questionDTOs);
+        var paginatedQuestionDTOs = _questionService.PaginateQuestions(questionDTOs, currentPage, 15);
+
+        return Ok(paginatedQuestionDTOs);
     }
 
     [HttpGet("Get")]
