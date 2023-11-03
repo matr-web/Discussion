@@ -19,8 +19,8 @@ public class UserController : ControllerBase
         _emailService = emailService;
     }
 
-    [HttpGet("Get")]
-    public async Task<ActionResult<UserDTO>> GetAsync([FromQuery] string? userNameOrEmail)
+    [HttpGet("Get/{userNameOrEmail}")]
+    public async Task<ActionResult<UserDTO>> GetAsync([FromRoute] string userNameOrEmail)
     {
         var userDTO = await _userService
             .GetUserByAsync(u => u.Username == userNameOrEmail || u.Email == userNameOrEmail, "Questions,Answers,Ratings");
@@ -33,8 +33,8 @@ public class UserController : ControllerBase
         return Ok(userDTO);
     }
 
-    [HttpDelete("Delete")]
-    public async Task<ActionResult> DeleteAsync([FromQuery] int userId)
+    [HttpDelete("Delete/{userId}")]
+    public async Task<ActionResult> DeleteAsync([FromRoute] int userId)
     {
         var userDTO = await _userService.GetUserByAsync(u => u.Id == userId);
 

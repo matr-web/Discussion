@@ -18,9 +18,9 @@ public class QuestionController : ControllerBase
         _userService = userService;
     }
 
-    [HttpGet("GetAll")]
+    [HttpGet("GetAll/{categoryId}")]
     public async Task<ActionResult<PaginatedQuestionDTOs>> GetAllAsync
-        (int categoryId, string? searchPhrase, string orderByProperty = "Topic", int currentPage = 1)
+        ([FromRoute]int categoryId, [FromQuery]string? searchPhrase, [FromQuery]string orderByProperty = "Topic", [FromQuery]int currentPage = 1)
     {
         var questionDTOs = await _questionService
             .GetQuestionsAsync(orderByProperty, q => q.CategoryId == categoryId, includeProperties: "Category,User,Ratings");
@@ -40,8 +40,8 @@ public class QuestionController : ControllerBase
         return Ok(paginatedQuestionDTOs);
     }
 
-    [HttpGet("Get")]
-    public async Task<ActionResult<QuestionDTO>> GetAsync([FromQuery] int questionId)
+    [HttpGet("Get/{questionId}")]
+    public async Task<ActionResult<QuestionDTO>> GetAsync([FromRoute] int questionId)
     {
         var questionDTO = await _questionService.GetQuestionByAsync(q => q.Id == questionId, "Category,User,Answers,Ratings");
 
@@ -63,8 +63,8 @@ public class QuestionController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("Put")]
-    public async Task<ActionResult> PutAsync([FromQuery] int questionId, [FromBody] UpdateQuestionDTO updateQuestionDTO)
+    [HttpPut("Put/{questionId}")]
+    public async Task<ActionResult> PutAsync([FromRoute] int questionId, [FromBody] UpdateQuestionDTO updateQuestionDTO)
     {
         if (questionId != updateQuestionDTO.Id)
         {
@@ -83,8 +83,8 @@ public class QuestionController : ControllerBase
     }
 
     [Authorize]
-    [HttpDelete("Delete")]
-    public async Task<ActionResult> DeleteAsync([FromQuery] int questionId)
+    [HttpDelete("Delete/{questionId}")]
+    public async Task<ActionResult> DeleteAsync([FromRoute] int questionId)
     {        
         var questionDTO = await _questionService.GetQuestionByAsync(g => g.Id == questionId);
 

@@ -73,8 +73,8 @@ public class RatingController : ControllerBase
     }
 
     [Authorize]
-    [HttpDelete("Delete")]
-    public async Task<ActionResult> DeleteAsync([FromQuery] int ratingId)
+    [HttpDelete("Delete/{ratingId}")]
+    public async Task<ActionResult> DeleteAsync([FromRoute] int ratingId)
     {
         var ratingDTO = await _ratingService.GetRatingByAsync(r => r.Id == ratingId);
 
