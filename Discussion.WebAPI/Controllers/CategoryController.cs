@@ -16,7 +16,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet("GetAll")]
-    public async Task<ActionResult<PaginatedCategoryDTOs>> GetAllAsync(int currentPage = 1)
+    public async Task<ActionResult<PaginatedCategoryDTOs>> GetAllAsync([FromQuery] int currentPage = 1)
     {
         var categoryDTOs = await _categoryService.GetCategoriesAsync();
 
@@ -29,8 +29,8 @@ public class CategoryController : ControllerBase
         return Ok(paginatedCategoryDTOs);
     }
 
-    [HttpGet("Get")]
-    public async Task<ActionResult<CategoryDTO>> GetAsync([FromQuery] int categoryId)
+    [HttpGet("Get/{categoryId}")]
+    public async Task<ActionResult<CategoryDTO>> GetAsync([FromRoute] int categoryId)
     {
         var categoryDTO = await _categoryService.GetCategoryByAsync(c => c.Id == categoryId, "Questions");
 
@@ -51,9 +51,9 @@ public class CategoryController : ControllerBase
         return Created($"Category/{categoryDTO.Id}", categoryDTO);
     }
 
-    [HttpPut("Put")]
+    [HttpPut("Put/{categoryId}")]
     [Authorize(Roles = $"{StaticData.role_administrator}")]
-    public async Task<ActionResult> PutAsync([FromQuery] int categoryId, [FromBody] UpdateCategoryDTO updateCategoryDTO)
+    public async Task<ActionResult> PutAsync([FromRoute] int categoryId, [FromBody] UpdateCategoryDTO updateCategoryDTO)
     {
         if (categoryId != updateCategoryDTO.Id)
         {
@@ -65,9 +65,9 @@ public class CategoryController : ControllerBase
         return Ok(categoryDTO);
     }
 
-    [HttpDelete("Delete")]
+    [HttpDelete("Delete/{categoryId}")]
     [Authorize(Roles = $"{StaticData.role_administrator}")]
-    public async Task<ActionResult> DeleteAsync([FromQuery] int categoryId)
+    public async Task<ActionResult> DeleteAsync([FromRoute] int categoryId)
     {
         var categoryDTO = await _categoryService.GetCategoryByAsync(g => g.Id == categoryId);
 

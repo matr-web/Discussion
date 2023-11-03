@@ -18,8 +18,8 @@ public class AnswerController : ControllerBase
         _userService = userService;
     }
 
-    [HttpGet("GetAll")]
-    public async Task<ActionResult<IEnumerable<AnswerDTO>>> GetAllAsync([FromQuery] int questionId)
+    [HttpGet("GetAll/{questionId}")]
+    public async Task<ActionResult<IEnumerable<AnswerDTO>>> GetAllAsync([FromRoute] int questionId)
     {
         var answerDTOs = await _answerService.GetAnswersAsync(a => a.QuestionId == questionId, includeProperties: "User,Ratings");
 
@@ -31,8 +31,8 @@ public class AnswerController : ControllerBase
         return Ok(answerDTOs);
     }
 
-    [HttpGet("Get")]
-    public async Task<ActionResult<AnswerDTO>> GetAsync([FromQuery] int answerId)
+    [HttpGet("Get/{answerId}")]
+    public async Task<ActionResult<AnswerDTO>> GetAsync([FromRoute] int answerId)
     {
         var answerDTO = await _answerService.GetAnswerByAsync(a => a.Id == answerId, "Question,User,Ratings");
 
@@ -54,8 +54,8 @@ public class AnswerController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("Put")]
-    public async Task<ActionResult> PutAsync([FromQuery] int answerId, [FromBody] UpdateAnswerDTO updateAnswerDTO)
+    [HttpPut("Put/{answerId}")]
+    public async Task<ActionResult> PutAsync([FromRoute] int answerId, [FromBody] UpdateAnswerDTO updateAnswerDTO)
     {
         if (answerId != updateAnswerDTO.Id)
         {
@@ -74,7 +74,7 @@ public class AnswerController : ControllerBase
     }
 
     [Authorize]
-    [HttpDelete("Delete")]
+    [HttpDelete("Delete/{answerId}")]
     public async Task<ActionResult> DeleteAsync([FromQuery] int answerId)
     {
         var answerDTO = await _answerService.GetAnswerByAsync(g => g.Id == answerId);
