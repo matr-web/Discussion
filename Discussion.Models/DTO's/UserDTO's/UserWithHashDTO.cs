@@ -29,21 +29,4 @@ public class UserWithHashDTO
     /// PasswordHash.
     /// </summary>
     public string PasswordHash { get; set; }
-
-    public static UserWithHashDTO ToUserWithHashDTO(object obj)
-    {
-        Type type = obj.GetType();
-        var properties = type.GetProperties();
-
-        var userDTO = new UserWithHashDTO()
-        {
-            Id = (int)properties.FirstOrDefault(p => p.Name == "Id").GetValue(obj),
-            Username = properties.FirstOrDefault(p => p.Name == "Username").GetValue(obj).ToString(),
-            Email = properties.FirstOrDefault(p => p.Name == "Email").GetValue(obj).ToString(),
-            Role = properties.FirstOrDefault(p => p.Name == "Role").GetValue(obj).ToString(),
-            PasswordHash = properties.FirstOrDefault(p => p.Name == "PasswordHash").GetValue(obj).ToString()
-        };
-
-        return userDTO;
-    }
 }

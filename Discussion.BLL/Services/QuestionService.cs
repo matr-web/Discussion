@@ -2,11 +2,10 @@
 using Discussion.DAL.Repository.UnitOfWork;
 using Discussion.Entities;
 using Discussion.Models.DTO_s.AnswerDTO_s;
-using Discussion.Models.DTO_s.CategoryDTO_s;
 using Discussion.Models.DTO_s.QuestionDTO_s;
 using Discussion.Models.DTO_s.RatingDTO_s;
 using Discussion.Models.DTO_s.UserDTO_s;
-using System.Linq;
+using Discussion.Utility.Mappers;
 using System.Linq.Expressions;
 
 namespace Discussion.BLL.Services;
@@ -41,7 +40,7 @@ public class QuestionService : IQuestionService
             questionDTOList.Add(questionDTO);
         }
 
-        // Return ordered collection of QuestionDTO type.
+        // Return collection of QuestionDTO ordered by the given property.
         return questionDTOList.OrderBy(q => q.GetType().GetProperty(orderByProperty).GetValue(q));
     }
 
@@ -130,7 +129,7 @@ public class QuestionService : IQuestionService
             .Take(pageSize)
             .ToList();
 
-        var paginatedQuestionDTOs = PaginatedQuestionDTOs.ToPaginatedQuestionsDTO(questionDTOs, currentPage, totalPages);
+        var paginatedQuestionDTOs = QuestionMapper.ToPaginatedQuestionsDTO(questionDTOs, currentPage, totalPages);
 
         return paginatedQuestionDTOs;
     }
@@ -142,22 +141,22 @@ public class QuestionService : IQuestionService
     /// </summary>
     /// <param name="questionEntity">QuestionEntity element that will be mapped to DTO.</param>
     /// <returns>QuestionDTO element with data from given QuestionEntity as parameter.</returns>
-    private QuestionDTO MapToQuestionDTO(QuestionEntity questionEntity)
+    private static QuestionDTO MapToQuestionDTO(QuestionEntity questionEntity)
     {
-        var questionDTO = QuestionDTO.ToQuestionDTO(questionEntity);
+        var questionDTO = QuestionMapper.ToQuestionDTO(questionEntity);
 
         // Check if loaded Question Entity has related data - Category.
         if (questionEntity.Category != null)
         {
             // If yes - map the CategoryEntity to DTO and add to the CategoryDTO property located in QuestionDTO.
-            questionDTO.Category = CategoryDTO.ToCategoryDTO(questionEntity.Category);
+            questionDTO.Category = CategoryMapper.ToCategoryDTO(questionEntity.Category);
         }
 
         // Check if loaded Question Entity has related data - Author.
         if (questionEntity.User != null)
         {
             // If yes - map the UserEntity to DTO and add to the UserDTO property located in QuestionDTO.
-            questionDTO.User = UserDTO.ToUserDTO(questionEntity.User);
+            questionDTO.User = UserMapper.ToUserDTO(questionEntity.User);
         }
 
         // Check if loaded Question Entity has related data - Collection of Answer type.
@@ -169,7 +168,7 @@ public class QuestionService : IQuestionService
             // If yes - map each to DTO and add to the AnswerDTO collection located in QuestionDTO.
             foreach (var answerEntity in questionEntity.Answers)
             {
-                answersList.Add(AnswerDTO.ToAnswerDTO(answerEntity));
+                answersList.Add(AnswerMapper.ToAnswerDTO(answerEntity));
             }
 
             // Set Answers collection...
@@ -186,7 +185,7 @@ public class QuestionService : IQuestionService
             foreach (var ratingEntity in questionEntity.Ratings)
             {
 
-                ratingsList.Add(RatingDTO.ToRatingDTO(ratingEntity));
+                ratingsList.Add(RatingMapper.ToRatingDTO(ratingEntity));
             }
 
             // Set Ratings collection...

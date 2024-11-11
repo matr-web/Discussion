@@ -48,17 +48,17 @@ public class QuestionDTO
     /// <summary>
     /// Author.
     /// </summary>
-    public virtual UserDTO? User { get; set; }
+    public virtual UserDTO User { get; set; }
 
     /// <summary>
     /// Collection of Answers.
     /// </summary>
-    public virtual ICollection<AnswerDTO>? Answers { get; set; }
+    public virtual ICollection<AnswerDTO> Answers { get; set; }
 
     /// <summary>
     /// Collection of Ratings.
     /// </summary>
-    public virtual ICollection<RatingDTO>? Ratings { get; set; }
+    public virtual ICollection<RatingDTO> Ratings { get; set; }
 
     /// <summary>
     /// Calculated Sum value of Ratings.
@@ -70,27 +70,5 @@ public class QuestionDTO
             return Ratings == null || Ratings.Count == 0
                 ? 0 : Ratings.Select(r => r.Value).Sum();
         }
-    }
-
-    /// <summary>
-    /// Mapper: object type -> QuestionDTO
-    /// </summary
-    public static QuestionDTO ToQuestionDTO(object obj)
-    {
-        Type type = obj.GetType();
-        var properties = type.GetProperties();
-
-        var questionDTO = new QuestionDTO
-        {
-            Id = (int)properties.FirstOrDefault(p => p.Name == "Id").GetValue(obj),
-            CategoryId = (int)properties.FirstOrDefault(p => p.Name == "CategoryId").GetValue(obj),
-            Topic = properties.FirstOrDefault(p => p.Name == "Topic").GetValue(obj).ToString(),
-            Content = properties.FirstOrDefault(p => p.Name == "Content").GetValue(obj).ToString(),
-            Date = Convert.ToDateTime(properties.FirstOrDefault(p => p.Name == "Date").GetValue(obj)),
-            UserId = properties.FirstOrDefault(p => p.Name == "UserId").GetValue(obj) != null ?
-            (int)properties.FirstOrDefault(p => p.Name == "UserId").GetValue(obj) : 0
-        };
-
-        return questionDTO;
     }
 }
