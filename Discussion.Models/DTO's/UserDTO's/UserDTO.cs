@@ -1,4 +1,6 @@
-﻿using Discussion.Models.DTO_s.AnswerDTO_s;
+﻿// Ignore Spelling: Username
+
+using Discussion.Models.DTO_s.AnswerDTO_s;
 using Discussion.Models.DTO_s.QuestionDTO_s;
 using Discussion.Models.DTO_s.RatingDTO_s;
 using System.ComponentModel.DataAnnotations;

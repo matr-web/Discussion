@@ -42,12 +42,12 @@ public class AnswerDTO
     /// <summary>
     /// Author.
     /// </summary>
-    public virtual UserDTO? User { get; set; }
+    public virtual UserDTO User { get; set; }
 
     /// <summary>
     /// Collection of Ratings.
     /// </summary>
-    public virtual ICollection<RatingDTO>? Ratings { get; set; }
+    public virtual ICollection<RatingDTO> Ratings { get; set; }
 
     /// <summary>
     /// Calculated Sum value of Ratings.

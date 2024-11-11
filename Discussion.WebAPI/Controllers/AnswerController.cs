@@ -23,12 +23,7 @@ public class AnswerController : ControllerBase
     {
         var answerDTOs = await _answerService.GetAnswersAsync(a => a.QuestionId == questionId, includeProperties: "User,Ratings");
 
-        if (answerDTOs == null || answerDTOs.Count() == 0)
-        {
-            return NotFound();
-        }
-
-        return Ok(answerDTOs);
+        return answerDTOs.Any() ? Ok(answerDTOs) : NotFound();
     }
 
     [HttpGet("Get/{answerId}")]
@@ -36,12 +31,7 @@ public class AnswerController : ControllerBase
     {
         var answerDTO = await _answerService.GetAnswerByAsync(a => a.Id == answerId, "Question,User,Ratings");
 
-        if (answerDTO == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(answerDTO);
+        return answerDTO != null ? Ok(answerDTO) : NotFound();
     }
 
     [Authorize]

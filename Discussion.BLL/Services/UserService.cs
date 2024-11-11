@@ -2,10 +2,7 @@
 using Discussion.DAL.Repository.UnitOfWork;
 using Discussion.Entities;
 using Discussion.Models.DTO_s.UserDTO_s;
-using Discussion.Models.DTO_s.QuestionDTO_s;
 using System.Linq.Expressions;
-using Discussion.Models.DTO_s.AnswerDTO_s;
-using Discussion.Models.DTO_s.RatingDTO_s;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -33,15 +30,14 @@ public class UserService : IUserService
         _logger = logger;
     }
 
-    public ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
+    public ClaimsPrincipal User => _httpContextAccessor.HttpContext?.User;
 
     public int? UserId => User == null ? null : int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-    public async Task<UserDTO?> RegisterUserAsync(RegisterUserDTO registerUserDTO)
+    public async Task<UserDTO> RegisterUserAsync(RegisterUserDTO registerUserDTO)
     {
         // Hash password.
-        string passwordHash
-                = BCrypt.Net.BCrypt.HashPassword(registerUserDTO.Password);
+        string passwordHash = BCrypt.Net.BCrypt.HashPassword(registerUserDTO.Password);
 
         // Create UserEntity type with current registered User data.
         var user = new UserEntity();
@@ -68,8 +64,8 @@ public class UserService : IUserService
         catch (Exception ex) 
         {
             // Log the information about the exception.
-            _logger.LogWarning($"User: {registerUserDTO.Username}, Email: {registerUserDTO.Email}, Role: {registerUserDTO.Role} failed to register." +
-                $" Error Message: {ex.Message}");
+            _logger.LogWarning($"User: {registerUserDTO.Username}, Email: {registerUserDTO.Email}, Role: {registerUserDTO.Role} failed to register. " +
+                $"Error Message: {ex.Message}");
         }
 
         return null;
@@ -78,7 +74,8 @@ public class UserService : IUserService
     public string GenerateToken(UserWithHashDTO userWithHashDTO)
     {
         // List of Claims.
-        List<Claim> claims = new List<Claim> {
+        List<Claim> claims = new()
+        {
                 new Claim(ClaimTypes.NameIdentifier, userWithHashDTO.Id.ToString()),
                 new Claim(ClaimTypes.Name, userWithHashDTO.Username),
                 new Claim(ClaimTypes.Email, userWithHashDTO.Email),
@@ -107,7 +104,7 @@ public class UserService : IUserService
         return jwt;
     }
 
-    public async Task<UserDTO?> GetUserByAsync(Expression<Func<UserEntity, bool>> filterExpression, string includeProperties = null)
+    public async Task<UserDTO> GetUserByAsync(Expression<Func<UserEntity, bool>> filterExpression, string includeProperties = null)
     {
         // Get UserEntity with fulfill given requirements.
         var userEntity = await _unitOfWork.UserRepository.GetAsync(filterExpression, includeProperties);
@@ -118,14 +115,11 @@ public class UserService : IUserService
             return null;
         }
 
-        // Map it to DTO.
-        var userDTO = MapToUserDTO(userEntity);
-
-        // Return userDTO with mapped UserEntity data.
-        return userDTO;
+        // Map it to DTO and return.
+        return MapToUserDTO(userEntity);
     }
 
-    public async Task<UserWithHashDTO?> GetUserWithHashByAsync(Expression<Func<UserEntity, bool>> filterExpression)
+    public async Task<UserWithHashDTO> GetUserWithHashByAsync(Expression<Func<UserEntity, bool>> filterExpression)
     {
         // Get UserEntity with fulfill given requirements.
         var userEntity = await _unitOfWork.UserRepository.GetAsync(filterExpression);
@@ -136,14 +130,11 @@ public class UserService : IUserService
             return null;
         }
 
-        // Map it to DTO.
-        var userWithHashDTO = UserMapper.ToUserWithHashDTO(userEntity);
-
-        // Return UserWithHashDTO with mapped UserEntity data.
-        return userWithHashDTO;
+        // Map it to DTO and return.
+        return UserMapper.ToUserWithHashDTO(userEntity);
     }
 
-    public async Task<UserDTO?> ChangePasswordAsync(ChangeUserPasswordDTO changeUserPasswordDTO)
+    public async Task<UserDTO> ChangePasswordAsync(ChangeUserPasswordDTO changeUserPasswordDTO)
     {
          // Get UserEntity with fulfill given requirements.
         var userEntity = await _unitOfWork.UserRepository.GetAsync(u => u.Id == changeUserPasswordDTO.Id);
@@ -219,51 +210,24 @@ public class UserService : IUserService
         var userDTO = UserMapper.ToUserDTO(userEntity);
 
         // Check if loaded User Entity has related data - Collection of Answer type.
-        if (userEntity.Answers != null && userEntity.Answers.Count() != 0)
+        if (userEntity.Answers != null && userEntity.Answers.Count != 0)
         {
-            // Create blanc AnswerDto type list.
-            var answersList = new List<AnswerDTO>();
-
-            // If yes - map each to DTO and add to the AnswerDTO collection located in UserDTO.
-            foreach (var answerEntity in userEntity.Answers)
-            {
-                answersList.Add(AnswerMapper.ToAnswerDTO(answerEntity));
-            }
-
             // Set Answers collection...
-            userDTO.Answers = answersList;
+            userDTO.Answers = userEntity.Answers.Select(AnswerMapper.ToAnswerDTO).ToList();
         }
 
         // Check if loaded User Entity has related data - Collection of Rating type.
-        if (userEntity.Ratings != null && userEntity.Ratings.Count() != 0)
+        if (userEntity.Ratings != null && userEntity.Ratings.Count != 0)
         {
-            // Create blanc RatingDto type list.
-            var ratingsList = new List<RatingDTO>();
-
-            // If yes - map each to DTO and add to the RatingDTO collection located in UserDTO.
-            foreach (var ratingEntity in userEntity.Ratings)
-            {
-                ratingsList.Add(RatingMapper.ToRatingDTO(ratingEntity));
-            }
-
             // Set Ratings collection...
-            userDTO.Ratings = ratingsList;
+            userDTO.Ratings = userEntity.Ratings.Select(RatingMapper.ToRatingDTO).ToList();
         }
 
         // Check if loaded User Entity has related data - Collection of Question type.
-        if (userEntity.Questions != null && userEntity.Questions.Count() != 0)
+        if (userEntity.Questions != null && userEntity.Questions.Count != 0)
         {
-            // Create blanc QuestionDto type list.
-            var questionsList = new List<QuestionDTO>();
-
-            // If yes - map each to DTO and add to the QuestionDTO collection located in UserDTO.
-            foreach (var questionEntity in userEntity.Questions)
-            {
-                questionsList.Add(QuestionMapper.ToQuestionDTO(questionEntity));
-            }
-
             // Set Questions collection...
-            userDTO.Questions = questionsList;
+            userDTO.Questions = userEntity.Questions.Select(QuestionMapper.ToQuestionDTO).ToList();
         }
 
         return userDTO;

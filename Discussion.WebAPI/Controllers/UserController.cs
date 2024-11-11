@@ -25,12 +25,7 @@ public class UserController : ControllerBase
         var userDTO = await _userService
             .GetUserByAsync(u => u.Username == userNameOrEmail || u.Email == userNameOrEmail, "Questions,Answers,Ratings");
 
-        if (userDTO == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(userDTO);
+        return userDTO != null ? Ok(userDTO) : NotFound();
     }
 
     [HttpDelete("Delete/{userId}")]
@@ -49,7 +44,7 @@ public class UserController : ControllerBase
             return Forbid();
         }
 
-        await _userService.DeleteUserAsync(userDTO.Id);
+        await _userService.DeleteUserAsync(userId);
 
         _emailService.SendAccountDeleteEmail(userDTO.Email);
 

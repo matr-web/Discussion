@@ -1,11 +1,8 @@
 ﻿using Discussion.BLL.Services.Interfaces;
 using Discussion.Entities;
 using Discussion.Models.DTO_s.RatingDTO_s;
-using Discussion.Models.DTO_s.QuestionDTO_s;
-using Discussion.Models.DTO_s.UserDTO_s;
 using System.Linq.Expressions;
 using Discussion.DAL.Repository.UnitOfWork;
-using Discussion.Models.DTO_s.AnswerDTO_s;
 using Discussion.Utility.Mappers;
 
 namespace Discussion.BLL.Services;
@@ -25,23 +22,13 @@ public class RatingService : IRatingService
         var ratingEntityCollection = await _unitOfWork.RatingRepository.GetAllAsync(filterExpression, includeProperties);
 
         // If there are no Rating's, return null.
-        if(ratingEntityCollection.Count() == 0)
+        if(!ratingEntityCollection.Any())
         {
             return null;
         }
 
-        // Map from RatingEntity to RatingDTO collection.
-        var ratingDTOList = new List<RatingDTO>();
-
-        foreach (var ratingEntity in ratingEntityCollection)
-        {
-            var ratingDTO = MapToRatingDTO(ratingEntity);
-
-            ratingDTOList.Add(ratingDTO);
-        }
-
-        // Return Collection of RatingDTO type.
-        return ratingDTOList;
+        // Else map it to dto's and return it.
+        return ratingEntityCollection.Select(RatingMapper.ToRatingDTO);
     }
 
     public async Task<RatingDTO> GetRatingByAsync(Expression<Func<RatingEntity, bool>> filterExpression, string includeProperties = null)
@@ -55,11 +42,8 @@ public class RatingService : IRatingService
             return null;
         }
 
-        // Map it to DTO.
-        var ratingDTO = MapToRatingDTO(ratingEntity);
-
-        // Return RatingDTO with mapped RatingEntity data.
-        return ratingDTO;
+        // Map it to DTO and return.
+        return MapToRatingDTO(ratingEntity);
     }
 
     public async Task<RatingDTO> InsertRatingAsync(CreateRatingDTO createRatingDTO, int userId)
@@ -77,11 +61,8 @@ public class RatingService : IRatingService
         await _unitOfWork.RatingRepository.AddAsync(ratingEntity);
         await _unitOfWork.SaveAsync();
 
-        // Map it to DTO.
-        var ratingDTO = MapToRatingDTO(ratingEntity);
-
-        // Return current mapped DTO.
-        return ratingDTO;
+        // Map it to DTO and return.
+        return MapToRatingDTO(ratingEntity);
     }
 
     public async Task DeleteRatingAsync(int ratingId)
