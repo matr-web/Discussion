@@ -10,7 +10,7 @@ public class RegisterUserDTO
     /// <summary>
     /// User Name.
     /// </summary>
-    public required string Username { get; set; }
+    public string Username { get; set; }
 
     /// <summary>
     /// Email.

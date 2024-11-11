@@ -13,6 +13,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using Discussion.Models.Models;
 using Microsoft.Extensions.Logging;
+using Discussion.Utility.Mappers;
 
 namespace Discussion.BLL.Services;
 
@@ -62,7 +63,7 @@ public class UserService : IUserService
 
             // If the User is added to the DB return a DTO with his data.
             var userEntity = await _unitOfWork.UserRepository.GetAsync(u => u.Email == user.Email);
-            return UserDTO.ToUserDTO(userEntity);
+            return UserMapper.ToUserDTO(userEntity);
         }
         catch (Exception ex) 
         {
@@ -136,7 +137,7 @@ public class UserService : IUserService
         }
 
         // Map it to DTO.
-        var userWithHashDTO = UserWithHashDTO.ToUserWithHashDTO(userEntity);
+        var userWithHashDTO = UserMapper.ToUserWithHashDTO(userEntity);
 
         // Return UserWithHashDTO with mapped UserEntity data.
         return userWithHashDTO;
@@ -171,7 +172,7 @@ public class UserService : IUserService
                 + $"- Has changed password successfully.");
 
             // Return the User as DTO.
-            return UserDTO.ToUserDTO(userEntity);
+            return UserMapper.ToUserDTO(userEntity);
         }
         catch(Exception ex) 
         {
@@ -213,9 +214,9 @@ public class UserService : IUserService
     /// </summary>
     /// <param name="userEntity">UserEntity element that will be mapped to DTO.</param>
     /// <returns>UserDTO element with data from given UserEntity as parameter.</returns>
-    private UserDTO MapToUserDTO(UserEntity userEntity)
+    private static UserDTO MapToUserDTO(UserEntity userEntity)
     {
-        var userDTO = UserDTO.ToUserDTO(userEntity);
+        var userDTO = UserMapper.ToUserDTO(userEntity);
 
         // Check if loaded User Entity has related data - Collection of Answer type.
         if (userEntity.Answers != null && userEntity.Answers.Count() != 0)
@@ -226,7 +227,7 @@ public class UserService : IUserService
             // If yes - map each to DTO and add to the AnswerDTO collection located in UserDTO.
             foreach (var answerEntity in userEntity.Answers)
             {
-                answersList.Add(AnswerDTO.ToAnswerDTO(answerEntity));
+                answersList.Add(AnswerMapper.ToAnswerDTO(answerEntity));
             }
 
             // Set Answers collection...
@@ -242,7 +243,7 @@ public class UserService : IUserService
             // If yes - map each to DTO and add to the RatingDTO collection located in UserDTO.
             foreach (var ratingEntity in userEntity.Ratings)
             {
-                ratingsList.Add(RatingDTO.ToRatingDTO(ratingEntity));
+                ratingsList.Add(RatingMapper.ToRatingDTO(ratingEntity));
             }
 
             // Set Ratings collection...
@@ -258,7 +259,7 @@ public class UserService : IUserService
             // If yes - map each to DTO and add to the QuestionDTO collection located in UserDTO.
             foreach (var questionEntity in userEntity.Questions)
             {
-                questionsList.Add(QuestionDTO.ToQuestionDTO(questionEntity));
+                questionsList.Add(QuestionMapper.ToQuestionDTO(questionEntity));
             }
 
             // Set Questions collection...

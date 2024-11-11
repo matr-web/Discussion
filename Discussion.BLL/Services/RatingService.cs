@@ -6,6 +6,7 @@ using Discussion.Models.DTO_s.UserDTO_s;
 using System.Linq.Expressions;
 using Discussion.DAL.Repository.UnitOfWork;
 using Discussion.Models.DTO_s.AnswerDTO_s;
+using Discussion.Utility.Mappers;
 
 namespace Discussion.BLL.Services;
 
@@ -100,29 +101,29 @@ public class RatingService : IRatingService
     /// </summary>
     /// <param name="ratingEntity">RatingEntity element that will be mapped to DTO.</param>
     /// <returns>RatingDTO element with data from given RatingEntity as parameter.</returns>
-    private RatingDTO MapToRatingDTO(RatingEntity ratingEntity)
+    private static RatingDTO MapToRatingDTO(RatingEntity ratingEntity)
     {
-        var ratingDTO = RatingDTO.ToRatingDTO(ratingEntity);
+        var ratingDTO = RatingMapper.ToRatingDTO(ratingEntity);
 
         // Check if loaded Rating Entity has related data - User.
         if (ratingDTO.User != null)
         {
             // If yes - map the UserEntity to DTO and add to the UserDTO property located in RatingDTO.
-            ratingDTO.User = UserDTO.ToUserDTO(ratingEntity.User);
+            ratingDTO.User = UserMapper.ToUserDTO(ratingEntity.User);
         }
 
         // Check if loaded Rating Entity has related data - Question.
         if (ratingEntity.Question != null)
         {
             // If yes - map the QuestionEntity to DTO and add to the QuestionDTO property located in RatingDTO.
-            ratingDTO.Question = QuestionDTO.ToQuestionDTO(ratingEntity.Question);
+            ratingDTO.Question = QuestionMapper.ToQuestionDTO(ratingEntity.Question);
         }
 
         // Check if loaded Rating Entity has related data - Answer.
         if (ratingDTO.Answer != null)
         {
             // If yes - map the AnswerEntity to DTO and add to the AnswerDTO property located in RatingDTO.
-            ratingDTO.Answer = AnswerDTO.ToAnswerDTO(ratingEntity.Answer);
+            ratingDTO.Answer = AnswerMapper.ToAnswerDTO(ratingEntity.Answer);
         }
 
         return ratingDTO;

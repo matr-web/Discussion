@@ -22,19 +22,4 @@ public class CategoryDTO
     /// Collection of Questions of given Category.
     /// </summary>
     public ICollection<QuestionDTO>? Questions { get; set; }
-
-    /// <summary>
-    /// Mapper: object type -> CategoryDTO
-    /// </summary
-    public static CategoryDTO ToCategoryDTO(object obj)
-    {
-        Type type = obj.GetType();
-        var properties = type.GetProperties();
-
-        return new CategoryDTO
-        {
-            Id = (int)properties.FirstOrDefault(p => p.Name == "Id").GetValue(obj),
-            Name = properties.FirstOrDefault(p => p.Name == "Name").GetValue(obj).ToString(),
-        };
-    }
 }
