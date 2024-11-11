@@ -20,13 +20,7 @@ public class CategoryController : ControllerBase
     {
         var categoryDTOs = await _categoryService.GetCategoriesAsync();
 
-        if (categoryDTOs == null || categoryDTOs.Count() == 0)
-        {
-            return NotFound();
-        }
-        var paginatedCategoryDTOs = _categoryService.PaginateCategories(categoryDTOs, currentPage, 2);
-
-        return Ok(paginatedCategoryDTOs);
+        return categoryDTOs.Any() ? Ok(_categoryService.PaginateCategories(categoryDTOs, currentPage, 2)) : NotFound();
     }
 
     [HttpGet("Get/{categoryId}")]
@@ -34,12 +28,7 @@ public class CategoryController : ControllerBase
     {
         var categoryDTO = await _categoryService.GetCategoryByAsync(c => c.Id == categoryId, "Questions");
 
-        if (categoryDTO == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(categoryDTO);
+        return categoryDTO != null ? Ok(categoryDTO) : NotFound();
     }
 
     [HttpPost("Post")]
@@ -76,7 +65,7 @@ public class CategoryController : ControllerBase
             return NotFound();
         }
 
-        await _categoryService.DeleteCategoryAsync(categoryDTO.Id);
+        await _categoryService.DeleteCategoryAsync(categoryId);
 
         return NoContent();
     }

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// Ignore Spelling: Username
+
+using System.ComponentModel.DataAnnotations;
 
 namespace Discussion.Models.DTO_s.UserDTO_s;
 

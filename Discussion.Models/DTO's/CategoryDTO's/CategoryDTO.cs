@@ -21,5 +21,5 @@ public class CategoryDTO
     /// <summary>
     /// Collection of Questions of given Category.
     /// </summary>
-    public ICollection<QuestionDTO>? Questions { get; set; }
+    public ICollection<QuestionDTO> Questions { get; set; }
 }
