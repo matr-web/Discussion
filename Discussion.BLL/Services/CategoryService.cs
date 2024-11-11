@@ -3,7 +3,7 @@ using Discussion.DAL.Repository.UnitOfWork;
 using Discussion.Entities;
 using Discussion.Models.DTO_s.CategoryDTO_s;
 using Discussion.Models.DTO_s.QuestionDTO_s;
-using Discussion.Models.DTO_s.UserDTO_s;
+using Discussion.Utility.Mappers;
 using System.Linq.Expressions;
 
 namespace Discussion.BLL.Services;
@@ -115,9 +115,9 @@ public class CategoryService : ICategoryService
     /// </summary>
     /// <param name="categoryEntity">CategoryEntity element that will be mapped to DTO.</param>
     /// <returns>CategoryDTO element with data from given CategoryEntity as parameter.</returns>
-    private CategoryDTO MapToCategoryDTO(CategoryEntity categoryEntity)
+    private static CategoryDTO MapToCategoryDTO(CategoryEntity categoryEntity)
     {
-        var categoryDTO = CategoryDTO.ToCategoryDTO(categoryEntity);
+        var categoryDTO = CategoryMapper.ToCategoryDTO(categoryEntity);
 
         // Check if loaded Category Entity has related data - Collection of Question type.
         if (categoryEntity.Questions != null && categoryEntity.Questions.Count() != 0)
@@ -128,7 +128,7 @@ public class CategoryService : ICategoryService
             // If yes - map each to DTO and add to the QuestionDTO collection located in CategoryDTO.
             foreach (var questionEntity in categoryEntity.Questions)
             {
-                questionsList.Add(QuestionDTO.ToQuestionDTO(questionEntity));
+                questionsList.Add(QuestionMapper.ToQuestionDTO(questionEntity));
             }
 
             // Set Questions collection...
@@ -152,7 +152,7 @@ public class CategoryService : ICategoryService
             .Take(pageSize)
             .ToList();
 
-        var paginatedCategoriesDTOs = PaginatedCategoryDTOs.ToPaginatedCategoriesDTO(categoryDTOs, currentPage, totalPages);
+        var paginatedCategoriesDTOs = CategoryMapper.ToPaginatedCategoriesDTO(categoryDTOs, currentPage, totalPages);
 
         return paginatedCategoriesDTOs;
     }

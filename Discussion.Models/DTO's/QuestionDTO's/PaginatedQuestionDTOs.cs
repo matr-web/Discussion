@@ -19,17 +19,4 @@ public class PaginatedQuestionDTOs
     /// The count of all pages.
     /// </summary>
     public int PageCount { get; set; }
-
-    /// <summary>
-    /// Create new PaginatedQuestionDTOs object and return it.
-    /// </summary>
-    public static PaginatedQuestionDTOs ToPaginatedQuestionsDTO(IEnumerable<QuestionDTO> questionDTOs, int currentPage, int pageCount)
-    {
-        return new PaginatedQuestionDTOs
-        {
-            Questions = questionDTOs,
-            CurrentPage = currentPage,
-            PageCount = pageCount
-        };
-    }
 }

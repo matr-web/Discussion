@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Discussion.DAL\Discussion.DAL.csproj" />
     <ProjectReference Include="..\Discussion.Models\Discussion.Models.csproj" />
+    <ProjectReference Include="..\Discussion.Utility\Discussion.Utility.csproj" />
   </ItemGroup>
 
 </Project>

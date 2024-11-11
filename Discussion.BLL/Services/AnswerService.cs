@@ -5,6 +5,7 @@ using Discussion.Models.DTO_s.AnswerDTO_s;
 using Discussion.Models.DTO_s.QuestionDTO_s;
 using Discussion.Models.DTO_s.RatingDTO_s;
 using Discussion.Models.DTO_s.UserDTO_s;
+using Discussion.Utility.Mappers;
 using System.Linq.Expressions;
 
 namespace Discussion.BLL.Services;
@@ -118,22 +119,22 @@ public class AnswerService : IAnswerService
     /// </summary>
     /// <param name="answerEntity">AnswerEntity element that will be mapped to DTO.</param>
     /// <returns>AnswerDTO element with data from given AnswerEntity as parameter.</returns>
-    private AnswerDTO MapToAnswerDTO(AnswerEntity answerEntity)
+    private static AnswerDTO MapToAnswerDTO(AnswerEntity answerEntity)
     {
-        var answerDTO = AnswerDTO.ToAnswerDTO(answerEntity);
+        var answerDTO = AnswerMapper.ToAnswerDTO(answerEntity);
 
         // Check if loaded Answer Entity has related data - Question.
         if (answerEntity.Question != null)
         {
             // If yes - map the QuestionEntity to DTO and add to the QuestionDTO property located in AnswerDTO.
-            answerDTO.Question = QuestionDTO.ToQuestionDTO(answerEntity.Question);
+            answerDTO.Question = QuestionMapper.ToQuestionDTO(answerEntity.Question);
         }
 
         // Check if loaded Answer Entity has related data - User.
         if (answerDTO.User != null)
         {
             // If yes - map the UserEntity to DTO and add to the UserDTO property located in AnswerDTO.
-            answerDTO.User = UserDTO.ToUserDTO(answerEntity.User);
+            answerDTO.User = UserMapper.ToUserDTO(answerEntity.User);
         }
 
         // Check if loaded AnswerEntity has related data - Collection of Rating type.
@@ -145,7 +146,7 @@ public class AnswerService : IAnswerService
             // If yes - map each to DTO and add to the RatingDTO collection located in AnswerDTO.
             foreach (var ratingEntity in answerEntity.Ratings)
             {
-                ratingsList.Add(RatingDTO.ToRatingDTO(ratingEntity));
+                ratingsList.Add(RatingMapper.ToRatingDTO(ratingEntity));
             }
 
             // Set Ratings collection...

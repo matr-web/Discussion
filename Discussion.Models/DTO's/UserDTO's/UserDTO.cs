@@ -45,20 +45,4 @@ public class UserDTO
     /// Collection of User's Ratings's.
     /// </summary>
     public virtual ICollection<RatingDTO> Ratings { get; set; }
-
-    public static UserDTO ToUserDTO(object obj)
-    {
-        Type type = obj.GetType();
-        var properties = type.GetProperties();
-
-        var userDTO = new UserDTO()
-        {
-            Id = (int)properties.FirstOrDefault(p => p.Name == "Id").GetValue(obj),
-            Username = properties.FirstOrDefault(p => p.Name == "Username").GetValue(obj).ToString(),
-            Email = properties.FirstOrDefault(p => p.Name == "Email").GetValue(obj).ToString(),
-            Role = properties.FirstOrDefault(p => p.Name == "Role").GetValue(obj).ToString(),
-        };
-
-        return userDTO;
-    }
 }

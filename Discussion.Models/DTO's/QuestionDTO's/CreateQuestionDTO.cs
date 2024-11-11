@@ -13,7 +13,7 @@ public class CreateQuestionDTO
     /// <summary>
     /// Topic.
     /// </summary>
-    public string Topic { get; set; }
+    public required string Topic { get; set; }
 
     /// <summary>
     /// Content.

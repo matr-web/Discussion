@@ -19,17 +19,4 @@ public class PaginatedCategoryDTOs
     /// The count of all pages.
     /// </summary>
     public int PageCount { get; set; }
-
-    /// <summary>
-    /// Create new PaginatedCategoryDTOs object and return it.
-    /// </summary>
-    public static PaginatedCategoryDTOs ToPaginatedCategoriesDTO(IEnumerable<CategoryDTO> categoryDTOs, int currentPage, int pageCount)
-    {
-        return new PaginatedCategoryDTOs
-        {
-            Categories = categoryDTOs,
-            CurrentPage = currentPage,
-            PageCount = pageCount
-        };
-    }
 }
