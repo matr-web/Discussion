@@ -34,13 +34,11 @@ public class RatingController : ControllerBase
             ratingDTOs = ratingDTOs
            .Where(r => r.UserId == userId);
         }
-
         if (questionId != null)
         {
             ratingDTOs = ratingDTOs
            .Where(r => r.QuestionId == questionId);
         }
-
         if (answerId != null)
         {
             ratingDTOs = ratingDTOs
@@ -52,15 +50,8 @@ public class RatingController : ControllerBase
             .GetRatingsAsync(r => ratingDTOs.Select(dto => dto.Id).Contains(r.Id),
             includeProperties: "User,Question,Answer");
 
-        if (ratingDTOs == null || ratingDTOs.Count() == 0)
-        {
-            return NotFound();
-        }
-
-        // Order them descending based on Value.
-        ratingDTOs = ratingDTOs.OrderByDescending(r => r.Value);
-
-        return Ok(ratingDTOs);
+        // If the User has Ratings order them descending based on their Value.
+        return ratingDTOs.Any() ? Ok(ratingDTOs.OrderByDescending(r => r.Value)) : NotFound();
     }
 
     [Authorize]
@@ -89,7 +80,7 @@ public class RatingController : ControllerBase
             return Forbid();
         }
 
-        await _ratingService.DeleteRatingAsync(ratingDTO.Id);
+        await _ratingService.DeleteRatingAsync(ratingId);
 
         return NoContent();
     }

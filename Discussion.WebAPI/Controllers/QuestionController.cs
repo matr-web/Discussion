@@ -20,7 +20,7 @@ public class QuestionController : ControllerBase
 
     [HttpGet("GetAll/{categoryId}")]
     public async Task<ActionResult<PaginatedQuestionDTOs>> GetAllAsync
-        ([FromRoute]int categoryId, [FromQuery]string? searchPhrase, [FromQuery]string orderByProperty = "Topic", [FromQuery]int currentPage = 1)
+        ([FromRoute]int categoryId, [FromQuery]string searchPhrase, [FromQuery]string orderByProperty = "Topic", [FromQuery]int currentPage = 1)
     {
         var questionDTOs = await _questionService
             .GetQuestionsAsync(orderByProperty, q => q.CategoryId == categoryId, includeProperties: "Category,User,Ratings");
@@ -30,14 +30,7 @@ public class QuestionController : ControllerBase
             questionDTOs = questionDTOs.Where(q => q.Topic.ToLower().Contains(searchPhrase.ToLower()));
         }        
 
-        if (questionDTOs == null || questionDTOs.Count() == 0)
-        {
-            return NotFound();
-        }
-
-        var paginatedQuestionDTOs = _questionService.PaginateQuestions(questionDTOs, currentPage, 15);
-
-        return Ok(paginatedQuestionDTOs);
+        return questionDTOs.Any() ? Ok(_questionService.PaginateQuestions(questionDTOs, currentPage, 15)) : NotFound();
     }
 
     [HttpGet("Get/{questionId}")]
@@ -45,12 +38,7 @@ public class QuestionController : ControllerBase
     {
         var questionDTO = await _questionService.GetQuestionByAsync(q => q.Id == questionId, "Category,User,Answers,Ratings");
 
-        if (questionDTO == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(questionDTO);
+        return questionDTO != null ? Ok(questionDTO) : NotFound();
     }
 
     [Authorize]
@@ -99,7 +87,7 @@ public class QuestionController : ControllerBase
             return Forbid();
         }
 
-        await _questionService.DeleteQuestionAsync(questionDTO.Id);
+        await _questionService.DeleteQuestionAsync(questionId);
 
         return NoContent();
     }

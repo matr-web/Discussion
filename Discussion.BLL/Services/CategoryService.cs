@@ -2,7 +2,6 @@
 using Discussion.DAL.Repository.UnitOfWork;
 using Discussion.Entities;
 using Discussion.Models.DTO_s.CategoryDTO_s;
-using Discussion.Models.DTO_s.QuestionDTO_s;
 using Discussion.Utility.Mappers;
 using System.Linq.Expressions;
 
@@ -23,23 +22,13 @@ public class CategoryService : ICategoryService
         var categoryEntityCollection = await _unitOfWork.CategoryRepository.GetAllAsync(filterExpression, includeProperties);
 
         // If there are no Categories, return null.
-        if (categoryEntityCollection.Count() == 0)
+        if (!categoryEntityCollection.Any())
         {
             return null;
         }
 
-        // Map from CategoryEntity to CategoryDTO collection.
-        var categoryDTOList = new List<CategoryDTO>();
-
-        foreach (var categoryEntity in categoryEntityCollection)
-        {
-            var categoryDTO = MapToCategoryDTO(categoryEntity);
-
-            categoryDTOList.Add(categoryDTO);
-        }
-
-        // Return Collection of CategoryDTO type orderd by the Name property.
-        return categoryDTOList.OrderBy(c => c.Name); 
+        // Else map them to dto's and return ordered by the Name property.
+        return categoryEntityCollection.Select(MapToCategoryDTO).OrderBy(c => c.Name);
     }
 
     public async Task<CategoryDTO> GetCategoryByAsync(Expression<Func<CategoryEntity, bool>> filterExpression, string includeProperties = null)
@@ -47,17 +36,14 @@ public class CategoryService : ICategoryService
         // Get CategoryEntity with fulfill given requirements.
         var categoryEntity = await _unitOfWork.CategoryRepository.GetAsync(filterExpression, includeProperties);
 
-        // If no such Category exists, return null.
+        // If no such Category exists - return null.
         if (categoryEntity == null)
         {
             return null;
         }
 
-        // Map it to DTO.
-        var categoryDTO = MapToCategoryDTO(categoryEntity);
-
-        // Return CategoryDTO with mapped CategoryEntity data.
-        return categoryDTO;
+        // Map it to DTO and return.
+        return MapToCategoryDTO(categoryEntity);
     }
 
     public async Task<CategoryDTO> InsertCategoryAsync(CreateCategoryDTO createCategoryDTO)
@@ -72,11 +58,8 @@ public class CategoryService : ICategoryService
         await _unitOfWork.CategoryRepository.AddAsync(categoryEntity);
         await _unitOfWork.SaveAsync();
 
-        // Map it to DTO.
-        var categoryDTO = MapToCategoryDTO(categoryEntity);
-
-        // Return current inserted Entity mapped to DTO.
-        return categoryDTO;
+        // Map it to DTO and return.
+        return MapToCategoryDTO(categoryEntity);
     }
 
     public async Task<CategoryDTO> UpdateCategoryAsync(UpdateCategoryDTO updateCategoryDTO)
@@ -91,11 +74,8 @@ public class CategoryService : ICategoryService
         await _unitOfWork.CategoryRepository.UpdateAsync(categoryEntity);
         await _unitOfWork.SaveAsync();
 
-        // Map it to DTO.
-        var categoryDTO = MapToCategoryDTO(categoryEntity);
-
-        // Return current mapped Entity as DTO.
-        return categoryDTO;
+        // Map it to DTO and return.
+        return MapToCategoryDTO(categoryEntity);
     }
 
     public async Task DeleteCategoryAsync(int categoryId)
@@ -120,19 +100,10 @@ public class CategoryService : ICategoryService
         var categoryDTO = CategoryMapper.ToCategoryDTO(categoryEntity);
 
         // Check if loaded Category Entity has related data - Collection of Question type.
-        if (categoryEntity.Questions != null && categoryEntity.Questions.Count() != 0)
+        if (categoryEntity.Questions != null && categoryEntity.Questions.Count != 0)
         {
-            // Create blanc QuestionDto type list.
-            var questionsList = new List<QuestionDTO>();
-
-            // If yes - map each to DTO and add to the QuestionDTO collection located in CategoryDTO.
-            foreach (var questionEntity in categoryEntity.Questions)
-            {
-                questionsList.Add(QuestionMapper.ToQuestionDTO(questionEntity));
-            }
-
-            // Set Questions collection...
-            categoryDTO.Questions = questionsList;
+            // If yes - map each Question to DTO and add to the QuestionDTO collection located in CategoryDTO.
+            categoryDTO.Questions = categoryEntity.Questions.Select(QuestionMapper.ToQuestionDTO).ToList();
         }
 
         return categoryDTO;

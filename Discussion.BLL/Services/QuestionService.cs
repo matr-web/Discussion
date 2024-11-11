@@ -1,10 +1,7 @@
 ﻿using Discussion.BLL.Services.Interfaces;
 using Discussion.DAL.Repository.UnitOfWork;
 using Discussion.Entities;
-using Discussion.Models.DTO_s.AnswerDTO_s;
 using Discussion.Models.DTO_s.QuestionDTO_s;
-using Discussion.Models.DTO_s.RatingDTO_s;
-using Discussion.Models.DTO_s.UserDTO_s;
 using Discussion.Utility.Mappers;
 using System.Linq.Expressions;
 
@@ -25,23 +22,13 @@ public class QuestionService : IQuestionService
         var questionEntityCollection = await _unitOfWork.QuestionRepository.GetAllAsync(filterExpression, includeProperties);
 
         // If there are no Question's, return null.
-        if (questionEntityCollection.Count() == 0)
+        if (!questionEntityCollection.Any())
         {
             return null;
         }
 
-        // Map from QuestionEntity to QuestionDTO collection.
-        var questionDTOList = new List<QuestionDTO>();
-
-        foreach (var questionEntity in questionEntityCollection)
-        {
-            var questionDTO = MapToQuestionDTO(questionEntity);
-
-            questionDTOList.Add(questionDTO);
-        }
-
-        // Return collection of QuestionDTO ordered by the given property.
-        return questionDTOList.OrderBy(q => q.GetType().GetProperty(orderByProperty).GetValue(q));
+        // Else map them to dto's and return ordered by the given property.
+        return questionEntityCollection.Select(MapToQuestionDTO).OrderBy(q => q.GetType().GetProperty(orderByProperty).GetValue(q));
     }
 
     public async Task<QuestionDTO> GetQuestionByAsync(Expression<Func<QuestionEntity, bool>> filterExpression, string includeProperties = null)
@@ -55,11 +42,8 @@ public class QuestionService : IQuestionService
             return null;
         }
 
-        // Map it to DTO.
-        var questionDTO = MapToQuestionDTO(questionEntity);
-
-        // Return QuestionDTO with mapped QuestionEntity data.
-        return questionDTO;
+        // Map it to DTO and return.
+        return MapToQuestionDTO(questionEntity);
     }
 
     public async Task<QuestionDTO> InsertQuestionAsync(CreateQuestionDTO createQuestionDTODTO, int userId)
@@ -77,11 +61,8 @@ public class QuestionService : IQuestionService
         await _unitOfWork.QuestionRepository.AddAsync(questionEntity);
         await _unitOfWork.SaveAsync();
 
-        // Map it to DTO.
-        var questionDTO = MapToQuestionDTO(questionEntity);
-
-        // Return current mapped DTO.
-        return questionDTO;
+        // Map it to DTO and return.
+        return MapToQuestionDTO(questionEntity);
     }
 
     public async Task<QuestionDTO> UpdateQuestionAsync(UpdateQuestionDTO updateQuestionDTO)
@@ -98,11 +79,8 @@ public class QuestionService : IQuestionService
         await _unitOfWork.QuestionRepository.UpdateAsync(questionEntity);
         await _unitOfWork.SaveAsync();
 
-        // Map it to DTO.
-        var questionDTO = MapToQuestionDTO(questionEntity);
-
-        // Return current inserted Entity mapped to DTO.
-        return questionDTO;
+        // Map it to DTO and return.
+        return MapToQuestionDTO(questionEntity);
     }
 
     public async Task DeleteQuestionAsync(int questionId)
@@ -160,36 +138,17 @@ public class QuestionService : IQuestionService
         }
 
         // Check if loaded Question Entity has related data - Collection of Answer type.
-        if (questionEntity.Answers != null && questionEntity.Answers.Count() != 0)
+        if (questionEntity.Answers != null && questionEntity.Answers.Count != 0)
         {
-            // Create blanc AnswerDto type list.
-            var answersList = new List<AnswerDTO>();
-
-            // If yes - map each to DTO and add to the AnswerDTO collection located in QuestionDTO.
-            foreach (var answerEntity in questionEntity.Answers)
-            {
-                answersList.Add(AnswerMapper.ToAnswerDTO(answerEntity));
-            }
-
             // Set Answers collection...
-            questionDTO.Answers = answersList;
+            questionDTO.Answers = questionEntity.Answers.Select(AnswerMapper.ToAnswerDTO).ToList();
         }
 
         // Check if loaded Question Entity has related data - Collection of Answer type.
-        if (questionEntity.Ratings != null && questionEntity.Ratings.Count() != 0)
+        if (questionEntity.Ratings != null && questionEntity.Ratings.Count != 0)
         {
-            // Create blanc RatingDto type list.
-            var ratingsList = new List<RatingDTO>();
-
-            // If yes - map each to DTO and add to the RatingDTO collection located in QuestionDTO.
-            foreach (var ratingEntity in questionEntity.Ratings)
-            {
-
-                ratingsList.Add(RatingMapper.ToRatingDTO(ratingEntity));
-            }
-
             // Set Ratings collection...
-            questionDTO.Ratings = ratingsList;
+            questionDTO.Ratings = questionEntity.Ratings.Select(RatingMapper.ToRatingDTO).ToList();
         }
 
         return questionDTO;

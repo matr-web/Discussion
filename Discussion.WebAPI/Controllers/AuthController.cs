@@ -1,4 +1,6 @@
-﻿using Discussion.BLL.Services.Interfaces;
+﻿// Ignore Spelling: Auth
+
+using Discussion.BLL.Services.Interfaces;
 using Discussion.Models.DTO_s.UserDTO_s;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
